@@ -40,16 +40,14 @@ const env = (
           : DEV
 );
 
-Promise.resolve()
+console.info(`Executing scenario '${scenario}' ...`);
+
+execute(env)
   .then(() => {
-    console.info(`Executing scenario '${scenario}' ...`);
-  })
-  .then(() => execute(env))
-  .then(() => {
-    console.info(`Scenario '${scenario}' is complete.`);
+    console.info(`Scenario '${scenario}' was successful.`);
     process.exit();
   })
-  .catch(({ message = 'No error message defined.' } = {}) => {
-    console.error(message);
+  .catch(({ message = 'No error message is defined.' }) => {
+    console.error(`Scenario ${scenario} has failed. ${message}`);
     process.exit(1);
   });
