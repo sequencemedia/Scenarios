@@ -1,0 +1,16 @@
+{
+  "compact": true,
+  "presets": [
+    [
+      "env", {
+        "targets": {
+          "targets": {
+            "node": "current"
+          }
+        },
+        "useBuiltIns": true
+      }
+    ],
+    "stage-1"
+  ]
+}

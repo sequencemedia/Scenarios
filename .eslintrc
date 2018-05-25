@@ -1,0 +1,32 @@
+{
+  "env": {
+    "es6": true
+  },
+  "extends": "airbnb-base/legacy",
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "rules": {
+    "comma-dangle": "error",
+    "comma-spacing": [
+      "error", {
+        "before": false,
+        "after": true
+      }
+    ],
+    "yoda": "error",
+    "no-mixed-spaces-and-tabs": "error",
+    "no-multiple-empty-lines": "error",
+    "space-before-function-paren": [
+      "error", {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "max-len": ["error", 1000],
+    "class-methods-use-this": "warn"
+  }
+}
