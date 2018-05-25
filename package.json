@@ -18,6 +18,8 @@
   "homepage": "https://github.com/sequencemedia/Scenarios#readme",
   "private": true,
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-1": "^6.24.1",
@@ -25,8 +27,6 @@
     "eslint-config-airbnb-base": "^12.1.0"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
     "faker": "^4.1.0",
     "puppeteer": "^1.4.0",
     "yargs-parser": "^10.0.0"
