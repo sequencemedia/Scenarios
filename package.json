@@ -2,11 +2,11 @@
   "name": "scenarios",
   "version": "1.0.0",
   "description": "Scenarios",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "start": "node index"
+    "start": "babel src -d lib && node app"
   },
   "repository": {
     "type": "git",
@@ -22,17 +22,19 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
+    "babel-plugin-module-resolver": "^3.1.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-1": "^6.24.1",
+    "babel-runtime": "^6.26.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-import-resolver-babel-module": "^4.0.0",
     "eslint-plugin-import": "^2.12.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0"
   },
   "dependencies": {
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-runtime": "^6.26.0",
     "faker": "^4.1.0",
     "npm": "^6.1.0",
     "puppeteer": "^1.4.0",

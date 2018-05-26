@@ -10,8 +10,8 @@ const {
   UAT,
   QA,
   DEV
-} = require('./src/environments');
-const scenarios = require('./src/scenarios');
+} = require('./lib/environments');
+const scenarios = require('./lib/scenarios');
 
 // const toCamelCase = (s = '') => s.toString().replace(/-([a-z])/g, ([index, match]) => match.toUpperCase());
 
