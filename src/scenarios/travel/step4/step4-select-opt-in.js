@@ -1,4 +1,12 @@
-export default async (page) => {
+export default async (page, {
+  address: {
+    address1 = '4 Callisons Place',
+    address2 = 'Bellot Street',
+    city = 'Greenwich',
+    zip = 'SE10 0AJ'
+  } = {},
+  email = 'jonathan.perry@valtech.co.uk'
+} = {}) => {
   await page.waitForSelector('[data-step-index="4"]', { visible: true });
   /*
    *  Weirdness
@@ -7,15 +15,15 @@ export default async (page) => {
 
   await page.evaluate(() => { document.querySelector('[data-step-index="4"] .address-details .row').scrollIntoView({ behaviour: 'instant' }); });
 
-  await page.type('[data-step-index="4"] input#address_1', '4 Callisons Place');
-  await page.type('[data-step-index="4"] input#address_2', 'Bellot Street');
-  await page.type('[data-step-index="4"] input#address_city', 'Greenwich');
-  await page.type('[data-step-index="4"] input#address_zip', 'SE10 0AJ');
+  await page.type('[data-step-index="4"] input#address_1', address1);
+  await page.type('[data-step-index="4"] input#address_2', address2);
+  await page.type('[data-step-index="4"] input#address_city', city);
+  await page.type('[data-step-index="4"] input#address_zip', zip);
 
   await page.evaluate(() => { document.querySelector('[data-step-index="4"] .address-email .email-block').scrollIntoView({ behaviour: 'instant' }); });
 
-  await page.type('[data-step-index="4"] input.email-address-js', 'jonathan.perry@valtech.co.uk');
-  await page.type('[data-step-index="4"] input.confirm-email-address-js', 'jonathan.perry@valtech.co.uk');
+  await page.type('[data-step-index="4"] input.email-address-js', email);
+  await page.type('[data-step-index="4"] input.confirm-email-address-js', email);
 
   /*
    *  There's some more weirdness with this fake checkbox/button combination

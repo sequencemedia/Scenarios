@@ -1,4 +1,4 @@
-export default async (page) => {
+export default async (page, { campaignCode = 'family15' }) => {
   await page.waitForSelector('[data-step-index="3"]', { visible: true });
   /*
    *  Weirdness
@@ -7,7 +7,7 @@ export default async (page) => {
 
   await page.evaluate(() => { document.querySelector('[data-step-index="3"] .campaign-code').scrollIntoView({ behaviour: 'instant' }); });
 
-  await page.type('[data-step-index="3"] .campaign-code input[type="text"]', 'family15');
+  await page.type('[data-step-index="3"] .campaign-code input[type="text"]', campaignCode);
   await page.click('[data-step-index="3"] .campaign-code button.cta');
   await page.waitForSelector('[data-step-index="3"] .campaign-code .quote-valid', { visible: true });
 

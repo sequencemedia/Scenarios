@@ -1,4 +1,4 @@
-export default async (page) => {
+export default async (page, { brokerCode = '123456789' } = {}) => {
   await page.waitForSelector('[data-step-index="3"]', { visible: true });
   /*
    *  Weirdness
@@ -17,7 +17,7 @@ export default async (page) => {
    *  Wait for input
    */
   await page.waitForSelector('[data-step-index="3"] .broker-code input[type="tel"]', { visible: true });
-  await page.type('[data-step-index="3"] .broker-code input[type="tel"]', '123456789');
+  await page.type('[data-step-index="3"] .broker-code input[type="tel"]', brokerCode);
 
   await page.evaluate(() => { document.querySelector('[data-step-index="3"] .proceed-to-checkout').scrollIntoView({ behaviour: 'instant' }); });
 

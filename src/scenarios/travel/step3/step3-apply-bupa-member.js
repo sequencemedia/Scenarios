@@ -1,4 +1,4 @@
-export default async (page) => {
+export default async (page, { bupaMember = '7777777' } = {}) => {
   await page.waitForSelector('[data-step-index="3"]', { visible: true });
   /*
    *  Weirdness
@@ -7,7 +7,7 @@ export default async (page) => {
 
   await page.evaluate(() => { document.querySelector('[data-step-index="3"] .bupa-member').scrollIntoView({ behaviour: 'instant' }); });
 
-  await page.type('[data-step-index="3"] .bupa-member input[type="text"]', '7777777');
+  await page.type('[data-step-index="3"] .bupa-member input[type="text"]', bupaMember);
   await page.click('[data-step-index="3"] .bupa-member button.cta');
   await page.waitForSelector('[data-step-index="3"] .bupa-member .policy-number-applied', { visible: true });
 

@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer';
 
 import {
+  single,
   step2 as Step2,
   step3 as Step3,
   step4 as Step4,
@@ -11,96 +12,39 @@ const { step2 } = Step2;
 const { step3 } = Step3;
 const { step4 } = Step4;
 
-const single = async (page) => {
-  await page.focus('button[data-cover-type="travel"]');
-  await page.click('button[data-cover-type="travel"]');
+import enterSingleDates from './travel/step1/step1-enter-single-dates';
+import enterProfile from './travel/step1/step1-enter-profile';
 
-  await page.waitForSelector('.quote-input-container');
-  await page.evaluate(() => { document.querySelector('.quote-input-container').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('.quote-input-container', { visible: true });
-
-  await page.focus('button[data-cover-period="single"]');
-  await page.click('button[data-cover-period="single"]');
-
-  await page.waitForSelector('.quote-input-country-container input.quote-input-country');
-
-  const countries = await page.$$('.quote-input-country-container input.quote-input-country');
-  countries
-    .forEach(async (country) => {
-      await country.focus();
-      await country.click();
-      await country.type('United Kingdom');
-    });
-
-  await page.waitForSelector('.quote-continue');
-  await page.evaluate(() => { document.querySelector('.quote-continue').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('.quote-continue', { visible: true });
-
-  await page.focus('button[data-tracking="click:quote:step-0:cta:continue"]');
-  await page.click('button[data-tracking="click:quote:step-0:cta:continue"]');
-};
-
-const step1 = async (page) => {
+const step1 = async (page, params = {}) => {
   await page.waitForSelector('[data-step-index="1"]', { visible: true });
   /*
    *  Weirdness
    */
-  await page.click('[data-step-index="1"]');
+  await enterSingleDates(page, params);
 
-  await page.waitForSelector('[data-step-index="1"] .single-insurance-period');
-  await page.evaluate(() => { document.querySelector('[data-step-index="1"] .single-insurance-period').scrollIntoView({ behaviour: 'instant' }); });
-
-  /*
-   *  Weirdness
-   */
-  await page.focus('[data-step-index="1"] input#startdate');
-  await page.click('[data-step-index="1"] input#startdate');
-
-  await page.waitForSelector('.datepicker', { visible: true });
-
-  await page.click('.datepicker .day:not(.disabled)');
-
-  /*
-   *  Weirdness
-   */
-  await page.focus('[data-step-index="1"] input#finishdate');
-  await page.click('[data-step-index="1"] input#finishdate');
-
-  await page.waitForSelector('.datepicker', { visible: true });
-
-  await page.click('.datepicker .day:not(.disabled)');
-
-  await page.waitForSelector('[data-step-index="1"] .about-members');
-  await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
-
-  await page.type('[data-step-index="1"] select#business-title', 'Mr');
-  await page.type('[data-step-index="1"] input#first-name', 'Jonathan');
-  await page.type('[data-step-index="1"] input#last-name', 'Perry');
-  await page.type('[data-step-index="1"] input#date-day', '15');
-  await page.type('[data-step-index="1"] input#date-month', '10');
-  await page.type('[data-step-index="1"] input#date-year', '1973');
+  await enterProfile(page, params);
 
   await page.click('[data-step-index="1"] button.cta-button');
 };
 
-export default async ({ env, lang = 'en', headless = true }) => {
+export default async ({ env, lang = 'en', headless = true }, params = {}) => {
   const browser = await puppeteer.launch({ headless });
   const page = await browser.newPage();
 
   await page.goto(`http://${env}/${lang}/quote`);
 
-  await single(page);
+  await single(page, params);
 
   await page.waitForNavigation();
 
-  await step1(page);
-  await step2(page);
-  await step3(page);
-  await step4(page);
+  await step1(page, params);
+  await step2(page, params);
+  await step3(page, params);
+  await step4(page, params);
 
   await page.waitForNavigation();
 
-  await altapay(page);
+  await altapay(page, params);
 
   await page.waitForNavigation();
 
