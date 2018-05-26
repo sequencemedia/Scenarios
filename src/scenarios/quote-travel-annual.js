@@ -7,7 +7,7 @@ import {
   altapay
 } from './travel';
 
-const single = async (page) => {
+const annual = async (page) => {
   await page.focus('button[data-cover-type="travel"]');
   await page.click('button[data-cover-type="travel"]');
 
@@ -15,8 +15,8 @@ const single = async (page) => {
   await page.evaluate(() => { document.querySelector('.quote-input-container').scrollIntoView({ behaviour: 'instant' }); });
   await page.waitForSelector('.quote-input-container', { visible: true });
 
-  await page.focus('button[data-cover-period="single"]');
-  await page.click('button[data-cover-period="single"]');
+  await page.focus('button[data-cover-period="annual"]');
+  await page.click('button[data-cover-period="annual"]');
 
   await page.waitForSelector('.quote-input-country-container input.quote-input-country');
 
@@ -43,23 +43,14 @@ const step1 = async (page) => {
    */
   await page.click('[data-step-index="1"]');
 
-  await page.waitForSelector('[data-step-index="1"] .single-insurance-period');
-  await page.evaluate(() => { document.querySelector('[data-step-index="1"] .single-insurance-period').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('[data-step-index="1"] .single-insurance-period', { visible: true });
+  await page.waitForSelector('[data-step-index="1"] .annual-insurance-period');
+  await page.evaluate(() => { document.querySelector('[data-step-index="1"] .annual-insurance-period').scrollIntoView({ behaviour: 'instant' }); });
+  await page.waitForSelector('[data-step-index="1"] .annual-insurance-period', { visible: true });
 
-  await page.focus('[data-step-index="1"] input#startdate');
-  await page.click('[data-step-index="1"] input#startdate');
+  await page.focus('[data-step-index="1"] select#month-select');
+  await page.click('[data-step-index="1"] select#month-select');
 
-  await page.waitForSelector('.datepicker', { visible: true });
-
-  await page.click('.datepicker .day:not(.disabled)');
-
-  await page.focus('[data-step-index="1"] input#finishdate');
-  await page.click('[data-step-index="1"] input#finishdate');
-
-  await page.waitForSelector('.datepicker', { visible: true });
-
-  await page.click('.datepicker .day:not(.disabled)');
+  await page.evaluate(() => { document.querySelector('[data-step-index="1"] select#month-select').selectedIndex = 1; });
 
   await page.waitForSelector('[data-step-index="1"] .about-members');
   await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
@@ -76,12 +67,12 @@ const step1 = async (page) => {
 };
 
 export default async ({ env, lang = 'en' }) => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
 
   await page.goto(`http://${env}/${lang}/quote`);
 
-  await single(page);
+  await annual(page);
 
   await page.waitForNavigation();
 
