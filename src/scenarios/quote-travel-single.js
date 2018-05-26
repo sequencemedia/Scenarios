@@ -75,8 +75,8 @@ const step1 = async (page) => {
   await page.click('[data-step-index="1"] button.cta-button');
 };
 
-export default async ({ env, lang = 'en' }) => {
-  const browser = await puppeteer.launch({ headless: true });
+export default async ({ env, lang = 'en', headless = true }) => {
+  const browser = await puppeteer.launch({ headless });
   const page = await browser.newPage();
 
   await page.goto(`http://${env}/${lang}/quote`);

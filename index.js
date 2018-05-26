@@ -44,7 +44,7 @@ const env = (
 
 console.info(`Executing scenario '${scenario}' ...`);
 
-execute({ env })
+execute({ env, headless: !map.has('head') })
   .then(() => {
     console.info(`Scenario '${scenario}' has executed successfully.`);
     process.exit();
