@@ -2,12 +2,14 @@ import puppeteer from 'puppeteer';
 
 import {
   step2 as Step2,
-  step3,
-  step4,
+  step3 as Step3,
+  step4 as Step4,
   altapay
 } from './travel';
 
 const { step2 } = Step2;
+const { step3 } = Step3;
+const { step4 } = Step4;
 
 const annual = async (page) => {
   await page.focus('button[data-cover-type="travel"]');
@@ -47,7 +49,7 @@ const step1 = async (page) => {
 
   await page.waitForSelector('[data-step-index="1"] .annual-insurance-period');
   await page.evaluate(() => { document.querySelector('[data-step-index="1"] .annual-insurance-period').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('[data-step-index="1"] .annual-insurance-period', { visible: true });
+  // await page.waitForSelector('[data-step-index="1"] .annual-insurance-period', { visible: true });
 
   await page.focus('[data-step-index="1"] select#month-select');
   await page.click('[data-step-index="1"] select#month-select');
@@ -56,7 +58,7 @@ const step1 = async (page) => {
 
   await page.waitForSelector('[data-step-index="1"] .about-members');
   await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('[data-step-index="1"] .about-members', { visible: true });
+  // await page.waitForSelector('[data-step-index="1"] .about-members', { visible: true });
 
   await page.type('[data-step-index="1"] select#business-title', 'Mr');
   await page.type('[data-step-index="1"] input#first-name', 'Jonathan');

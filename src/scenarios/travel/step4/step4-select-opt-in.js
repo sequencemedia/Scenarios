@@ -6,7 +6,6 @@ export default async (page) => {
   await page.click('[data-step-index="4"]');
 
   await page.evaluate(() => { document.querySelector('[data-step-index="4"] .address-details .row').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('[data-step-index="4"] .address-details .row', { visible: true });
 
   await page.type('[data-step-index="4"] input#address_1', '4 Callisons Place');
   await page.type('[data-step-index="4"] input#address_2', 'Bellot Street');
@@ -14,7 +13,6 @@ export default async (page) => {
   await page.type('[data-step-index="4"] input#address_zip', 'SE10 0AJ');
 
   await page.evaluate(() => { document.querySelector('[data-step-index="4"] .address-email .email-block').scrollIntoView({ behaviour: 'instant' }); });
-  await page.waitForSelector('[data-step-index="4"] .address-email .email-block', { visible: true });
 
   await page.type('[data-step-index="4"] input.email-address-js', 'jonathan.perry@valtech.co.uk');
   await page.type('[data-step-index="4"] input.confirm-email-address-js', 'jonathan.perry@valtech.co.uk');
