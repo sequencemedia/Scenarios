@@ -1,11 +1,15 @@
 import puppeteer from 'puppeteer';
 
 import {
-  step2,
-  step3,
-  step4,
+  step2 as Step2,
+  step3 as Step3,
+  step4 as Step4,
   altapay
 } from './travel';
+
+const { step2 } = Step2;
+const { step3 } = Step3;
+const { step4 } = Step4;
 
 const single = async (page) => {
   await page.focus('button[data-cover-type="travel"]');

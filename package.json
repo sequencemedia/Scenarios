@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "start": "babel src -d lib && node app"
+    "start": "rm -r lib && babel src -d lib && node app"
   },
   "repository": {
     "type": "git",
