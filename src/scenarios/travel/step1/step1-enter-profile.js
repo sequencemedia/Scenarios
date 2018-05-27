@@ -17,6 +17,17 @@ export default async (page, {
   await page.waitForSelector('[data-step-index="1"] .about-members');
   await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
 
+  /*
+  console.log({
+    title,
+    firstName,
+    lastName,
+    day,
+    month,
+    year
+  });
+  */
+
   await page.type('[data-step-index="1"] select#business-title', title);
   await page.type('[data-step-index="1"] input#first-name', firstName);
   await page.type('[data-step-index="1"] input#last-name', lastName);

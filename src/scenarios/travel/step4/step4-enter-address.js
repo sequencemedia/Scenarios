@@ -14,6 +14,15 @@ export default async (page, {
 
   await page.evaluate(() => { document.querySelector('[data-step-index="4"] .address-details .row').scrollIntoView({ behaviour: 'instant' }); });
 
+  /*
+  console.log({
+    address1,
+    address2,
+    city,
+    zip
+  });
+  */
+
   await page.type('[data-step-index="4"] input#address_1', address1);
   await page.type('[data-step-index="4"] input#address_2', address2);
   await page.type('[data-step-index="4"] input#address_city', city);
