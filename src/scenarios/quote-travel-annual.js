@@ -48,7 +48,7 @@ export default async ({ env, lang = 'en', headless = true } = {}, params = {}) =
 
   await altapay(page, params);
 
-  await page.waitForNavigation();
+  await page.waitForNavigation({ timeout: 120000, waitUntil: 'load' });
 
   await browser.close();
 };

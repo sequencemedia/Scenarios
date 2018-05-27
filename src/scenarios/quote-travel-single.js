@@ -27,7 +27,7 @@ const step1 = async (page, params = {}) => {
   await page.click('[data-step-index="1"] button.cta-button');
 };
 
-export default async ({ env, lang = 'en', headless = true }, params = {}) => {
+export default async ({ env, lang = 'en', headless = true } = {}, params = {}) => {
   const browser = await puppeteer.launch({ headless });
   const page = await browser.newPage();
 
@@ -46,7 +46,7 @@ export default async ({ env, lang = 'en', headless = true }, params = {}) => {
 
   await altapay(page, params);
 
-  await page.waitForNavigation();
+  await page.waitForNavigation({ timeout: 120000, waitUntil: 'load' });
 
   await browser.close();
 };
