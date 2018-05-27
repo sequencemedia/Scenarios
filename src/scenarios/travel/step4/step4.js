@@ -1,7 +1,11 @@
+/* eslint no-nested-ternary: "off" */
+
 import enterAddress from './step4-enter-address';
 import enterEmail from './step4-enter-email';
 import selectOptIn from './step4-select-opt-in';
 import selectAcceptCondition from './step4-select-accept-conditions';
+
+const toBool = (value = false) => value === 'false' ? false : value === 'true' ? true : !!value;
 
 export default async (page, { selectOptIn: optIn = false, selectAcceptConditions: acceptConditions = true, ...params } = {}) => {
   await page.waitForSelector('[data-step-index="4"]', { visible: true });
@@ -14,12 +18,8 @@ export default async (page, { selectOptIn: optIn = false, selectAcceptConditions
 
   await enterEmail(page, params);
 
-  /*
-   *  There's some more weirdness with this fake checkbox/button combination
-   */
-
-  if (optIn) await selectOptIn(page, params);
-  if (acceptConditions) await selectAcceptCondition(page, params);
+  if (toBool(optIn)) await selectOptIn(page, params);
+  if (toBool(acceptConditions)) await selectAcceptCondition(page, params);
 
   await page.click('[data-step-index="4"] .accept-conditions');
   await page.evaluate(() => { document.querySelector('[data-step-index="4"] .accept-conditions .buy-btn a').scrollIntoView({ behaviour: 'instant' }); });

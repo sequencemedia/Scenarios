@@ -20,7 +20,7 @@ export const profile = (
       lastName: faker.name.firstName(),
       title: 'Mr', // faker.name.title(),
       day: date.getDate().toString(),
-      month: date.getMonth().toString(),
+      month: (date.getMonth() + 1).toString(),
       year: date.getFullYear().toString()
     }
     : {

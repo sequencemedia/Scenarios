@@ -1,11 +1,32 @@
-export default async (page) => {
+/* eslint no-nested-ternary: "off" */
+
+import selectBasic from './step2-select-basic';
+import selectBasicNonMedical from './step2-select-basic-non-medical';
+import selectBasicNonMedicalTripCancellation from './step2-select-basic-non-medical-trip-cancellation';
+
+const toBool = (value = false) => value === 'false' ? false : value === 'true' ? true : !!value;
+
+export default async (page, { selectBasic: basic = false, selectBasicNonMedical: basicNonMedical = false, selectBasicNonMedicalTripCancellation: basicNonMedicalTripCancellation = false }) => {
   await page.waitForSelector('[data-step-index="2"]', { visible: true });
   /*
    *  Weirdness
    */
   await page.click('[data-step-index="2"]');
 
-  await page.evaluate(() => { document.querySelector('[data-step-index="2"] .your-quote-wrapper').scrollIntoView({ behaviour: 'instant' }); });
+  /*
+  console.info({
+    basic,
+    basicNonMedical,
+    basicNonMedicalTripCancellation
+  });
+  */
 
-  await page.click('[data-step-index="2"] button.buy-cta');
+  if (toBool(basic)) await selectBasic(page);
+  else if (toBool(basicNonMedical)) await selectBasicNonMedical(page);
+  else if (toBool(basicNonMedicalTripCancellation)) await selectBasicNonMedicalTripCancellation(page);
+  else {
+    await page.evaluate(() => { document.querySelector('[data-step-index="2"] .your-quote-wrapper').scrollIntoView({ behaviour: 'instant' }); });
+
+    await page.click('[data-step-index="2"] button.buy-cta');
+  }
 };

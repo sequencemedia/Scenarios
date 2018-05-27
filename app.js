@@ -44,11 +44,24 @@ const env = (
 
 const headless = !map.has('head');
 
-console.info({ profile, address, contact });
+const selectBasic = map.get('selectBasic');
+const selectBasicNonMedical = map.get('selectBasicNonMedical');
+const selectBasicNonMedicalTripCancellation = map.get('selectBasicNonMedicalTripCancellation');
+const selectOptIn = map.get('selectOptIn');
+const selectAcceptConditions = map.get('selectAcceptConditions');
 
 console.info(`Executing scenario '${scenario}' ...`);
 
-execute({ env, headless }, { profile, address, contact })
+execute({ env, headless }, {
+  profile,
+  address,
+  contact,
+  selectBasic,
+  selectBasicNonMedical,
+  selectBasicNonMedicalTripCancellation,
+  selectOptIn,
+  selectAcceptConditions
+})
   .then(() => {
     console.info(`Scenario '${scenario}' has executed successfully.`);
     process.exit();
