@@ -1,6 +1,6 @@
 /* eslint no-shadow: "off", no-param-reassign: "off" */
 /*
-import { countries } from '../../countries';
+import { countries } from 'app/countries';
 
 export default async (page, { countryName = 'United Kingdom' }) => {
   await page.waitForSelector('.quote-travel .quote-input-container');
@@ -42,7 +42,7 @@ export default async (page, { countryName = 'United Kingdom' }) => {
   await page.select('.quote-travel .alternative-country-container select.alternative-country-select', 'United Kingdom');
 */
 
-import toBool from '../../to-bool';
+import toBool from 'app/to-bool';
 
 export default async (page, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
   await page.waitForSelector('.quote-travel .quote-input-container');

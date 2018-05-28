@@ -1,7 +1,6 @@
-const parser = require('yargs-parser');
-const faker = require('faker/locale/en_GB');
+import faker from 'faker/locale/en_GB';
 
-const map = new Map(Object.entries(parser(process.argv.slice(2))));
+import { args } from 'app/args';
 
 let date;
 {
@@ -14,7 +13,7 @@ let date;
 }
 
 export const profile = (
-  map.has('fake')
+  args.has('fake')
     ? {
       firstName: faker.name.firstName(),
       lastName: faker.name.firstName(),
@@ -24,11 +23,11 @@ export const profile = (
       year: date.getFullYear().toString()
     }
     : {
-      ...(map.has('firstName') ? { firstName: map.get('firstName') } : {}),
-      ...(map.has('lastName') ? { lastName: map.get('lastName') } : {}),
-      ...(map.has('title') ? { title: map.get('title') } : {}),
-      ...(map.has('day') ? { day: map.get('day').toString() } : {}),
-      ...(map.has('month') ? { month: map.get('month').toString() } : {}),
-      ...(map.has('year') ? { year: map.get('year').toString() } : {})
+      ...(args.has('firstName') ? { firstName: args.get('firstName') } : {}),
+      ...(args.has('lastName') ? { lastName: args.get('lastName') } : {}),
+      ...(args.has('title') ? { title: args.get('title') } : {}),
+      ...(args.has('day') ? { day: args.get('day').toString() } : {}),
+      ...(args.has('month') ? { month: args.get('month').toString() } : {}),
+      ...(args.has('year') ? { year: args.get('year').toString() } : {})
     }
 );

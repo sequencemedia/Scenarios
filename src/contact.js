@@ -1,14 +1,14 @@
-const parser = require('yargs-parser');
-const faker = require('faker/locale/en_GB');
 
-const map = new Map(Object.entries(parser(process.argv.slice(2))));
+import faker from 'faker/locale/en_GB';
+
+import { args } from 'app/args';
 
 export const contact = (
-  map.has('fake')
+  args.has('fake')
     ? {
       email: faker.internet.email()
     }
     : {
-      ...(map.has('email') ? { email: map.get('email') } : {})
+      ...(args.has('email') ? { email: args.get('email') } : {})
     }
 );

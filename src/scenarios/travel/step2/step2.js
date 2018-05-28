@@ -1,6 +1,6 @@
 /* eslint no-nested-ternary: "off" */
 
-import toBool from '../../../to-bool';
+import toBool from 'app/to-bool';
 
 import selectBasic from './step2-select-basic';
 import selectBasicNonMedical from './step2-select-basic-non-medical';

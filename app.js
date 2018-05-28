@@ -2,7 +2,7 @@
 
 require('babel-register');
 
-const parser = require('yargs-parser');
+const { args } = require('./lib/args');
 
 const {
   PRODUCTION,
@@ -17,8 +17,7 @@ const { profile } = require('./lib/profile');
 const { address } = require('./lib/address');
 const { contact } = require('./lib/contact');
 
-const map = new Map(Object.entries(parser(process.argv.slice(2))));
-const scenario = map.get('scenario');
+const scenario = args.get('scenario');
 
 if (!scenario) process.exit(1);
 
@@ -31,27 +30,27 @@ const {
 } = scenarios;
 
 const env = (
-  map.has('production')
+  args.has('production')
     ? PRODUCTION
-    : map.has('staging')
+    : args.has('staging')
       ? STAGING
-      : map.has('uat')
+      : args.has('uat')
         ? UAT
-        : map.has('qa')
+        : args.has('qa')
           ? QA
           : DEV
 );
 
-const headless = !map.has('head');
-const w = map.get('w');
-const h = map.get('h');
+const headless = !args.has('head');
+const w = args.get('w');
+const h = args.get('h');
 
-const selectPredictedCountry = map.get('selectPredictedCountry');
-const selectBasic = map.get('selectBasic');
-const selectBasicNonMedical = map.get('selectBasicNonMedical');
-const selectBasicNonMedicalTripCancellation = map.get('selectBasicNonMedicalTripCancellation');
-const selectOptIn = map.get('selectOptIn');
-const selectAcceptConditions = map.get('selectAcceptConditions');
+const selectPredictedCountry = args.get('selectPredictedCountry');
+const selectBasic = args.get('selectBasic');
+const selectBasicNonMedical = args.get('selectBasicNonMedical');
+const selectBasicNonMedicalTripCancellation = args.get('selectBasicNonMedicalTripCancellation');
+const selectOptIn = args.get('selectOptIn');
+const selectAcceptConditions = args.get('selectAcceptConditions');
 
 console.info(`Executing scenario '${scenario}' ...`);
 
