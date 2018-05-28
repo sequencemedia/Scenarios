@@ -1,12 +1,65 @@
+/* eslint no-shadow: "off", no-param-reassign: "off" */
+/*
+import { countries } from '../../countries';
 
 export default async (page, { countryName = 'United Kingdom' }) => {
-  await page.waitForSelector('.quote-input-country-container input.quote-input-country');
+  await page.waitForSelector('.quote-travel .quote-input-container');
 
-  const countries = await page.$$('.quote-input-country-container input.quote-input-country');
-  countries
-    .forEach(async (country) => {
-      await country.focus();
-      await country.click();
-      await country.type(countryName);
-    });
+  await page.click('.predicted-country-question a.accept-predicted-country');
+
+  await page.waitForSelector('.quote-travel .quote-input-container');
+
+  const countryIndex = countries.findIndex((country) => country.toLowerCase() === countryName.toLowerCase());
+
+  await page.evaluate(({ countryIndex, countryName }) => {
+    const EVENT = { bubbles: true, cancelable: true, view: window };
+    const selectedIndex = (countryIndex + 1);
+
+    document.querySelectorAll('#country-quote-travel')
+      .forEach((country) => {
+        country.dispatchEvent(new FocusEvent('focus', EVENT));
+        country.dispatchEvent(new MouseEvent('click', EVENT));
+        country.value = countryName;
+        country.dispatchEvent(new Event('change', EVENT));
+      });
+
+    document.querySelectorAll('.alternative-country-select')
+      .forEach((country) => {
+        country.dispatchEvent(new FocusEvent('focus', EVENT));
+        country.dispatchEvent(new MouseEvent('click', EVENT));
+        country.selectedIndex = selectedIndex;
+        country.dispatchEvent(new Event('change', EVENT));
+      });
+
+    const acceptPredictedCountry = document.querySelector('.accept-predicted-country');
+    if (acceptPredictedCountry) acceptPredictedCountry.dispatchEvent(new MouseEvent('click', EVENT));
+  }, { countryName, countryIndex });
 };
+*/
+
+/*
+  await page.evaluate(() => { document.querySelectorAll('.quote-travel .alternative-country-container select.alternative-country-select').forEach((select) => select.scrollIntoView()); });
+  await page.select('.quote-travel .alternative-country-container select.alternative-country-select', 'United Kingdom');
+*/
+
+import toBool from '../../to-bool';
+
+export default async (page, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
+  await page.waitForSelector('.quote-travel .quote-input-container');
+
+  if (toBool(selectPredictedCountry)) await page.click('.predicted-country-question a.accept-predicted-country');
+  else {
+    await page.evaluate(() => { document.querySelector('.quote-travel .quote-input-container input.quote-input-country').scrollIntoView({ behaviour: 'instant' }); }); // .forEach((input) => input.scrollIntoView({ behaviour: 'instant' })); });
+    await page.waitForSelector('.quote-travel .quote-input-container input.quote-input-country', { visible: true });
+
+    await page.focus('.quote-travel .quote-input-container input.quote-input-country');
+    await page.click('.quote-travel .quote-input-container input.quote-input-country', { clickCount: 3 });
+    await page.keyboard.press('Backspace');
+    await page.type('.quote-travel .quote-input-container input.quote-input-country', countryName);
+    await page.evaluate(() => {
+      document.querySelector('.quote-travel .quote-input-container input.quote-input-country')
+        .dispatchEvent(new Event('change', { bubbles: true, cancelable: true, view: window }));
+    });
+  }
+};
+

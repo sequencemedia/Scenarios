@@ -1,10 +1,10 @@
 /* eslint no-nested-ternary: "off" */
 
+import toBool from '../../../to-bool';
+
 import selectBasic from './step2-select-basic';
 import selectBasicNonMedical from './step2-select-basic-non-medical';
 import selectBasicNonMedicalTripCancellation from './step2-select-basic-non-medical-trip-cancellation';
-
-const toBool = (value = false) => value === 'false' ? false : value === 'true' ? true : !!value;
 
 export default async (page, { selectBasic: basic = false, selectBasicNonMedical: basicNonMedical = false, selectBasicNonMedicalTripCancellation: basicNonMedicalTripCancellation = false }) => {
   await page.waitForSelector('[data-step-index="2"]', { visible: true });

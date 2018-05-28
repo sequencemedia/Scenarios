@@ -28,5 +28,10 @@
     ],
     "max-len": ["error", 1000],
     "class-methods-use-this": "warn"
+  },
+  "settings": {
+    "import/resolver": {
+      "babel-module": {}
+    }
   }
 }

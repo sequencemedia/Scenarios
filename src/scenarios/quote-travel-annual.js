@@ -29,9 +29,22 @@ const step1 = async (page, params = {}) => {
   await page.click('[data-step-index="1"] button.cta-button');
 };
 
-export default async ({ env, lang = 'en', headless = true } = {}, params = {}) => {
-  const browser = await puppeteer.launch({ headless });
+export default async ({
+  env,
+  lang = 'en',
+  headless = true,
+  w: width = 1024,
+  h: height = 768
+} = {}, params = {}) => {
+  const browser = await puppeteer.launch({
+    headless,
+    args: [
+      `--window-size=${width},${height}`
+    ]
+  });
   const page = await browser.newPage();
+
+  await page.setViewport({ width, height });
 
   await page.goto(`http://${env}/${lang}/quote`);
 
@@ -48,7 +61,7 @@ export default async ({ env, lang = 'en', headless = true } = {}, params = {}) =
 
   await altapay(page, params);
 
-  await page.waitForNavigation({ timeout: 120000, waitUntil: 'load' });
+  await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
   await browser.close();
 };

@@ -1,11 +1,10 @@
 /* eslint no-nested-ternary: "off" */
+import toBool from '../../../to-bool';
 
 import enterAddress from './step4-enter-address';
 import enterEmail from './step4-enter-email';
 import selectOptIn from './step4-select-opt-in';
 import selectAcceptCondition from './step4-select-accept-conditions';
-
-const toBool = (value = false) => value === 'false' ? false : value === 'true' ? true : !!value;
 
 export default async (page, { selectOptIn: optIn = false, selectAcceptConditions: acceptConditions = true, ...params } = {}) => {
   await page.waitForSelector('[data-step-index="4"]', { visible: true });
