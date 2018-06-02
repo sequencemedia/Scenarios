@@ -16,17 +16,14 @@ const { scenarios } = require('./lib/scenarios');
 const { profile } = require('./lib/profile');
 const { address } = require('./lib/address');
 const { contact } = require('./lib/contact');
+const toBool = require('./lib/to-bool').default;
 
 const scenario = args.get('scenario');
 
 if (!scenario) process.exit(1);
 
 const {
-  [scenario]: execute = () => {
-    const reason = new Error(`No matching scenario for '${scenario}'`);
-
-    return Promise.reject(reason);
-  }
+  [scenario]: execute = () => Promise.reject(new Error(`No matching scenario for '${scenario}'`))
 } = scenarios;
 
 const env = (
@@ -41,7 +38,8 @@ const env = (
           : DEV
 );
 
-const headless = !args.has('head');
+const nonStop = toBool(args.get('nonStop'));
+const headless = !toBool(args.has('head'));
 const w = args.get('w');
 const h = args.get('h');
 
@@ -52,14 +50,14 @@ const selectBasicNonMedicalTripCancellation = args.get('selectBasicNonMedicalTri
 const selectOptIn = args.get('selectOptIn');
 const selectAcceptConditions = args.get('selectAcceptConditions');
 
-console.info(`Executing scenario '${scenario}' ...`);
-
-execute({
+const config = {
   env,
   headless,
   w,
   h
-}, {
+};
+
+const params = {
   profile,
   address,
   contact,
@@ -69,12 +67,36 @@ execute({
   selectBasicNonMedicalTripCancellation,
   selectOptIn,
   selectAcceptConditions
-})
-  .then(() => {
-    console.info(`Scenario '${scenario}' has executed successfully.`);
-    process.exit();
-  })
-  .catch(({ message = 'No error message is defined' }) => {
-    console.error(`Scenario ${scenario} has not executed successfully. ${message}`.trim());
-    process.exit(1);
-  });
+};
+
+if (nonStop) {
+  const executeNonStop = (c, p) => (
+    execute(c, p)
+      .then(() => {
+        console.info(`Scenario '${scenario}' has executed successfully - executing again ...`);
+      })
+      .catch(({ message = 'No error message is defined' }) => {
+        console.error(`Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
+      })
+      .then(() => executeNonStop(c, p))
+  );
+
+  console.info(`Executing scenario '${scenario}' non-stop ...`);
+
+  executeNonStop(config, params);
+} else {
+  const executeOnce = (c, p) => (
+    execute(c, p)
+      .then(() => {
+        console.info(`Scenario '${scenario}' has executed successfully.`);
+      })
+      .catch(({ message = 'No error message is defined' }) => {
+        console.error(`Scenario ${scenario} has not executed successfully. ${message.trim()}`);
+      })
+      .then(() => process.exit())
+  );
+
+  console.info(`Executing scenario '${scenario}' ...`);
+
+  executeOnce(config, params);
+}

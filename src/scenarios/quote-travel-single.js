@@ -1,3 +1,5 @@
+/* eslint no-console: "off" */
+
 import puppeteer from 'puppeteer';
 
 import {
@@ -46,20 +48,95 @@ export default async ({
 
   await page.goto(`http://${env}/${lang}/quote`);
 
-  await single(page, params);
+  /* BEGIN NETWORK MONITORING */
 
-  await page.waitForNavigation();
+  const requestMap = new Map();
 
-  await step1(page, params);
-  await step2(page, params);
-  await step3(page, params);
-  await step4(page, params);
+  const client = await page.target().createCDPSession();
+  await client.send('Emulation.clearDeviceMetricsOverride');
 
-  await page.waitForNavigation();
+  await client.send('Network.enable');
 
-  await altapay(page, params);
+  const transformUrl = (url) => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
+  const getResponseBody = async (requestId) => {
+    const { body } = await client.send('Network.getResponseBody', { requestId });
+    return body;
+  };
 
-  await page.waitForNavigation({ waitUntil: 'networkidle2' });
+  client.on('Network.requestWillBeSent', (event = {}) => {
+    const { request: { url, method } } = event;
 
-  await browser.close();
+    if (url.includes('omtrdc') && method === 'POST') {
+      const { requestId, request } = event;
+
+      requestMap.set(requestId, request);
+
+      console.info('Network.requestWillBeSent', {
+        requestId,
+        url: transformUrl(url),
+        method
+      });
+    }
+  });
+
+  client.on('Network.responseReceived', ({
+    requestId,
+    response: {
+      url,
+      status,
+      statusText
+    }
+  }) => {
+    if (requestMap.has(requestId)) {
+      console.info('Network.responseReceived', {
+        requestId,
+        url: transformUrl(url),
+        status,
+        statusText
+      });
+    }
+  });
+
+  client.on('Network.loadingFailed', async ({ requestId, ...response }) => {
+    if (requestMap.has(requestId)) {
+      console.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
+      requestMap.delete(requestId);
+    }
+  });
+
+  client.on('Network.loadingFinished', ({ requestId }) => {
+    if (requestMap.has(requestId)) {
+      console.info('Network.loadingFinished', { requestId });
+      requestMap.delete(requestId);
+    }
+  });
+
+  /* END NETWORK MONITORING */
+
+  try {
+    await single(page, params);
+
+    await page.waitForNavigation();
+
+    await step1(page, params);
+    await step2(page, params);
+    await step3(page, params);
+    await step4(page, params);
+
+    await page.waitForNavigation();
+
+    await altapay(page, params);
+
+    await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
+  } catch ({ message = 'No error message is defined' }) {
+    console.error(`Error in scenario \`quote-travel-single\`. ${message.trim()}`);
+  } finally {
+    /* BEGIN NETWORK MONITORING */
+
+    await client.send('Network.disable');
+
+    /* END NETWORK MONITORING */
+
+    await browser.close();
+  }
 };
