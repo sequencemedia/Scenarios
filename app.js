@@ -81,6 +81,24 @@ const selectBasicNonMedicalTripCancellation = args.get('selectBasicNonMedicalTri
 const selectOptIn = args.get('selectOptIn');
 const selectAcceptConditions = args.get('selectAcceptConditions');
 
+const ONEH = 10 * 10; // eslint-disable-line
+const ONEK = 10 * 10 * 10;
+const ONEM = ONEK * ONEK;
+const ONEB = ONEM * ONEK; // short scale (9 zeros)
+
+/*
+const format = (n) => (
+  (n > ONEB)
+    ? ' '.repeat((n / ONEB) < 10 ? 2 : (n / ONEB) < ONEH ? 1 : 0) + `${Math.floor(n / ONEB)}b`
+    : (n > ONEM)
+      ? ' '.repeat((n / ONEM) < 10 ? 2 : (n / ONEM) < ONEH ? 1 : 0) + `${Math.floor(n / ONEM)}m`
+      : (n > ONEK)
+        ? ' '.repeat((n / ONEK) < 10 ? 2 : (n / ONEK) < ONEK ? 1 : 0) + `${Math.floor(n / ONEK)}k`
+        : ' '.repeat((n < 10) ? 3 : (n < 100) ? 2 : (n < 1000) ? 1 : 0) + n);
+*/
+
+const format = (n) => (n >= ONEB) ? `${n / ONEB}B` : (n >= ONEM) ? `${n / ONEM}M` : (n >= ONEK) ? `${n / ONEK}K` : n.toString();
+
 const config = {
   env,
   headless,
@@ -104,10 +122,10 @@ if (nonStop) {
   const executeNonStop = (c, p, n = 1) => (
     execute(c, p)
       .then(() => {
-        console.info(`\n[${n}] Scenario '${scenario}' has executed successfully - executing again ...\n`);
+        console.info(`\n\t${format(n)}`, `Scenario '${scenario}' has executed successfully - executing again ...\n`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        console.error(`\n[${n}] Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...\n`);
+        console.error(`\n\t${format(n)}`, `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...\n`);
       })
       .then(() => executeNonStop(c, p, n + 1))
   );

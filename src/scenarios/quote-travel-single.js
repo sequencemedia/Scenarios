@@ -96,14 +96,14 @@ export default async ({
     }
   };
 
-  const onNetworkLoadingFailed = async ({ requestId, ...response }) => {
+  const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // console.info('Network.loadingFailed', { requestId, ...response });
     if (requestMap.has(requestId)) {
       console.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
       requestMap.delete(requestId);
     }
   };
 
-  const onNetworkLoadingFinished = ({ requestId }) => {
+  const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // console.info('Network.loadingFinished', { requestId, ...response });
     if (requestMap.has(requestId)) {
       console.info('Network.loadingFinished', { requestId });
       requestMap.delete(requestId);
