@@ -17,6 +17,8 @@ const { step4 } = Step4;
 import enterSingleDates from './travel/step1/step1-enter-single-dates';
 import enterProfile from './travel/step1/step1-enter-profile';
 
+const transformUrl = (url = '') => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
+
 const step1 = async (page, params = {}) => {
   await page.waitForSelector('[data-step-index="1"]', { visible: true });
   /*
@@ -55,7 +57,6 @@ export default async ({
   const client = await page.target().createCDPSession();
   await client.send('Emulation.clearDeviceMetricsOverride');
 
-  const transformUrl = (url) => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
   const getResponseBody = async (requestId) => {
     const { body } = await client.send('Network.getResponseBody', { requestId });
     return body;

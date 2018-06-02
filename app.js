@@ -100,3 +100,20 @@ if (nonStop) {
 
   executeOnce(config, params);
 }
+
+process.once('exit', (code) => {
+  let message;
+  switch (code) {
+    case 130:
+      message = ` - Execution of scenario '${scenario}' has been stopped.`;
+      break;
+    case 1:
+      message = 'Boom!';
+      break;
+    default:
+      message = `Execution of scenario '${scenario}' is complete.`;
+      break;
+  }
+  console.log(message);
+  process.exitCode = code === 1 ? 1 : 0;
+});
