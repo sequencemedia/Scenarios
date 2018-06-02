@@ -55,15 +55,13 @@ export default async ({
   const client = await page.target().createCDPSession();
   await client.send('Emulation.clearDeviceMetricsOverride');
 
-  await client.send('Network.enable');
-
   const transformUrl = (url) => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
   const getResponseBody = async (requestId) => {
     const { body } = await client.send('Network.getResponseBody', { requestId });
     return body;
   };
 
-  client.on('Network.requestWillBeSent', (event = {}) => {
+  const onNetworkRequestWillBeSent = (event = {}) => {
     const { request: { url, method } } = event;
 
     if (url.includes('omtrdc') && method === 'POST') {
@@ -77,9 +75,9 @@ export default async ({
         method
       });
     }
-  });
+  };
 
-  client.on('Network.responseReceived', ({
+  const onNetworkResponseReceived = ({
     requestId,
     response: {
       url,
@@ -95,21 +93,31 @@ export default async ({
         statusText
       });
     }
-  });
+  };
 
-  client.on('Network.loadingFailed', async ({ requestId, ...response }) => {
+  const onNetworkLoadingFailed = async ({ requestId, ...response }) => {
     if (requestMap.has(requestId)) {
       console.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
       requestMap.delete(requestId);
     }
-  });
+  };
 
-  client.on('Network.loadingFinished', ({ requestId }) => {
+  const onNetworkLoadingFinished = ({ requestId }) => {
     if (requestMap.has(requestId)) {
       console.info('Network.loadingFinished', { requestId });
       requestMap.delete(requestId);
     }
-  });
+  };
+
+  client.on('Network.requestWillBeSent', onNetworkRequestWillBeSent);
+
+  client.on('Network.responseReceived', onNetworkResponseReceived);
+
+  client.on('Network.loadingFailed', onNetworkLoadingFailed);
+
+  client.on('Network.loadingFinished', onNetworkLoadingFinished);
+
+  await client.send('Network.enable');
 
   /* END NETWORK MONITORING */
 
@@ -134,6 +142,14 @@ export default async ({
     /* BEGIN NETWORK MONITORING */
 
     await client.send('Network.disable');
+
+    client.removeListener('Network.requestWillBeSent', onNetworkRequestWillBeSent);
+
+    client.removeListener('Network.responseReceived', onNetworkResponseReceived);
+
+    client.removeListener('Network.loadingFailed', onNetworkLoadingFailed);
+
+    client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
 
     /* END NETWORK MONITORING */
 

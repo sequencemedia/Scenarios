@@ -70,33 +70,33 @@ const params = {
 };
 
 if (nonStop) {
-  const executeNonStop = (c, p) => (
+  const executeNonStop = (c, p, n = 1) => (
     execute(c, p)
       .then(() => {
-        console.info(`Scenario '${scenario}' has executed successfully - executing again ...`);
+        console.info(`\n[${n}] Scenario '${scenario}' has executed successfully - executing again ...\n`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        console.error(`Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
+        console.error(`\n[${n}] Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...\n`);
       })
-      .then(() => executeNonStop(c, p))
+      .then(() => executeNonStop(c, p, n + 1))
   );
 
-  console.info(`Executing scenario '${scenario}' non-stop ...`);
+  console.info(`Executing scenario '${scenario}' non-stop ...\n`);
 
   executeNonStop(config, params);
 } else {
   const executeOnce = (c, p) => (
     execute(c, p)
       .then(() => {
-        console.info(`Scenario '${scenario}' has executed successfully.`);
+        console.info(`\nScenario '${scenario}' has executed successfully.\n`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        console.error(`Scenario ${scenario} has not executed successfully. ${message.trim()}`);
+        console.error(`\nScenario ${scenario} has not executed successfully. ${message.trim()}\n`);
       })
       .then(() => process.exit())
   );
 
-  console.info(`Executing scenario '${scenario}' ...`);
+  console.info(`Executing scenario '${scenario}' ...\n`);
 
   executeOnce(config, params);
 }
