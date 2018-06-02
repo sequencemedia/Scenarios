@@ -20,15 +20,19 @@ import enterProfile from './travel/step1/step1-enter-profile';
 const transformUrl = (url = '') => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
 
 const step1 = async (page, params = {}) => {
-  await page.waitForSelector('[data-step-index="1"]', { visible: true });
-  /*
-   *  Weirdness
-   */
-  await enterSingleDates(page, params);
+  try {
+    await page.waitForSelector('[data-step-index="1"]', { visible: true });
+    /*
+     *  Weirdness
+     */
+    await enterSingleDates(page, params);
 
-  await enterProfile(page, params);
+    await enterProfile(page, params);
 
-  await page.click('[data-step-index="1"] button.cta-button');
+    await page.click('[data-step-index="1"] button.cta-button');
+  } catch ({ message = 'No error message is defined' }) {
+    console.error(`Error in Step 1. ${message.trim()}`);
+  }
 };
 
 export default async ({

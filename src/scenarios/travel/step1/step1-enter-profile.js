@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 export default async (page, {
   profile: {
     title = 'Mr',
@@ -8,30 +9,23 @@ export default async (page, {
     year = '1973'
   } = {}
 } = {}) => {
-  await page.waitForSelector('[data-step-index="1"]', { visible: true });
-  /*
-   *  Weirdness
-   */
-  await page.click('[data-step-index="1"]');
+  try {
+    await page.waitForSelector('[data-step-index="1"]', { visible: true });
+    /*
+     *  Weirdness
+     */
+    await page.click('[data-step-index="1"]');
 
-  await page.waitForSelector('[data-step-index="1"] .about-members');
-  await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
+    await page.waitForSelector('[data-step-index="1"] .about-members');
+    await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
 
-  /*
-  console.log({
-    title,
-    firstName,
-    lastName,
-    day,
-    month,
-    year
-  });
-  */
-
-  await page.type('[data-step-index="1"] select#business-title', title);
-  await page.type('[data-step-index="1"] input#first-name', firstName);
-  await page.type('[data-step-index="1"] input#last-name', lastName);
-  await page.type('[data-step-index="1"] input#date-day', day);
-  await page.type('[data-step-index="1"] input#date-month', month);
-  await page.type('[data-step-index="1"] input#date-year', year);
+    await page.type('[data-step-index="1"] select#business-title', title);
+    await page.type('[data-step-index="1"] input#first-name', firstName);
+    await page.type('[data-step-index="1"] input#last-name', lastName);
+    await page.type('[data-step-index="1"] input#date-day', day);
+    await page.type('[data-step-index="1"] input#date-month', month);
+    await page.type('[data-step-index="1"] input#date-year', year);
+  } catch ({ message = 'No error message is defined' }) {
+    console.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
+  }
 };

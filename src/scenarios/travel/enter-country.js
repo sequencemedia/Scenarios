@@ -1,4 +1,4 @@
-/* eslint no-shadow: "off", no-param-reassign: "off" */
+/* eslint no-console: "off", no-shadow: "off", no-param-reassign: "off" */
 /*
 import { countries } from 'app/countries';
 
@@ -45,21 +45,25 @@ export default async (page, { countryName = 'United Kingdom' }) => {
 import toBool from 'app/to-bool';
 
 export default async (page, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
-  await page.waitForSelector('.quote-travel .quote-input-container');
+  try {
+    await page.waitForSelector('.quote-travel .quote-input-container');
 
-  if (toBool(selectPredictedCountry)) await page.click('.predicted-country-question a.accept-predicted-country');
-  else {
-    await page.evaluate(() => { document.querySelector('.quote-travel .quote-input-container input.quote-input-country').scrollIntoView({ behaviour: 'instant' }); }); // .forEach((input) => input.scrollIntoView({ behaviour: 'instant' })); });
-    await page.waitForSelector('.quote-travel .quote-input-container input.quote-input-country', { visible: true });
+    if (toBool(selectPredictedCountry)) await page.click('.predicted-country-question a.accept-predicted-country');
+    else {
+      await page.evaluate(() => { document.querySelector('.quote-travel .quote-input-container input.quote-input-country').scrollIntoView({ behaviour: 'instant' }); }); // .forEach((input) => input.scrollIntoView({ behaviour: 'instant' })); });
+      await page.waitForSelector('.quote-travel .quote-input-container input.quote-input-country', { visible: true });
 
-    await page.focus('.quote-travel .quote-input-container input.quote-input-country');
-    await page.click('.quote-travel .quote-input-container input.quote-input-country', { clickCount: 3 });
-    await page.keyboard.press('Backspace');
-    await page.type('.quote-travel .quote-input-container input.quote-input-country', countryName);
-    await page.evaluate(() => {
-      document.querySelector('.quote-travel .quote-input-container input.quote-input-country')
-        .dispatchEvent(new Event('change', { bubbles: true, cancelable: true, view: window }));
-    });
+      await page.focus('.quote-travel .quote-input-container input.quote-input-country');
+      await page.click('.quote-travel .quote-input-container input.quote-input-country', { clickCount: 3 });
+      await page.keyboard.press('Backspace');
+      await page.type('.quote-travel .quote-input-container input.quote-input-country', countryName);
+      await page.evaluate(() => {
+        document.querySelector('.quote-travel .quote-input-container input.quote-input-country')
+          .dispatchEvent(new Event('change', { bubbles: true, cancelable: true, view: window }));
+      });
+    }
+  } catch ({ message = 'No error message is defined' }) {
+    console.error(`Error in Enter Country. ${message.trim()}`);
   }
 };
 
