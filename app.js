@@ -20,10 +20,41 @@ const toBool = require('./lib/to-bool').default;
 
 const scenario = args.get('scenario');
 
-if (!scenario) process.exit(1);
+const onExit = (code) => {
+  let message;
+  switch (code) {
+    case 130:
+      message = ` - Execution of scenario '${scenario}' has been stopped.`;
+      break;
+    case 1:
+      message = 'Boom!';
+      break;
+    case 2:
+      message = 'No scenario to execute.';
+      break;
+    case 3:
+      message = `No matching scenario for '${scenario}'.`;
+      break;
+    default:
+      message = `Execution of scenario '${scenario}' is complete.`;
+      break;
+  }
+  if (code === 0) console.info(message);
+  else console.error(message);
+
+  process.exitCode = (code === 1)
+    ? 1
+    : 0;
+};
+
+process.once('exit', onExit);
+
+if (!scenario) process.exit(2);
+
+if (!Reflect.has(scenarios, scenario)) process.exit(3);
 
 const {
-  [scenario]: execute = () => Promise.reject(new Error(`No matching scenario for '${scenario}'`))
+  [scenario]: execute = () => Promise.resolve()
 } = scenarios;
 
 const env = (
@@ -101,19 +132,3 @@ if (nonStop) {
   executeOnce(config, params);
 }
 
-process.once('exit', (code) => {
-  let message;
-  switch (code) {
-    case 130:
-      message = ` - Execution of scenario '${scenario}' has been stopped.`;
-      break;
-    case 1:
-      message = 'Boom!';
-      break;
-    default:
-      message = `Execution of scenario '${scenario}' is complete.`;
-      break;
-  }
-  console.log(message);
-  process.exitCode = code === 1 ? 1 : 0;
-});
