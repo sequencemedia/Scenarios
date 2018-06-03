@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page, { campaignCode = 'family15' }) => {
+export default async ({ page }, { campaignCode = 'family15' }) => {
   try {
     await page.waitForSelector('[data-step-index="3"]', { visible: true });
     /*

@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page, {
+export default async ({ page }, {
   address: {
     address1 = '4 Callisons Place',
     address2 = 'Bellot Street',

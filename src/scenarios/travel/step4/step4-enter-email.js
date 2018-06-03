@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page, { contact: { email = 'jonathan.perry@valtech.co.uk' } = {} } = {}) => {
+export default async ({ page }, { contact: { email = 'jonathan.perry@valtech.co.uk' } = {} } = {}) => {
   try {
     await page.waitForSelector('[data-step-index="4"]', { visible: true });
     /*

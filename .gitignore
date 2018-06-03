@@ -336,3 +336,6 @@ _Pvt_Extensions
 
 #Mac DS_Store
 *.DS_Store
+
+# Log
+log

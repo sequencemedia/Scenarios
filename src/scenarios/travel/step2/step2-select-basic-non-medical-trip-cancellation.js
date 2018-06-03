@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page) => {
+export default async ({ page }) => {
   try {
     await page.waitForSelector('[data-step-index="2"]', { visible: true });
     /*

@@ -6,10 +6,10 @@ import selectBasic from './step2-select-basic';
 import selectBasicNonMedical from './step2-select-basic-non-medical';
 import selectBasicNonMedicalTripCancellation from './step2-select-basic-non-medical-trip-cancellation';
 
-export default async (page, { selectBasic: basic = false, selectBasicNonMedical: basicNonMedical = false, selectBasicNonMedicalTripCancellation: basicNonMedicalTripCancellation = false }) => {
-  if (toBool(basic)) await selectBasic(page);
-  else if (toBool(basicNonMedical)) await selectBasicNonMedical(page);
-  else if (toBool(basicNonMedicalTripCancellation)) await selectBasicNonMedicalTripCancellation(page);
+export default async ({ page, ...config }, { selectBasic: basic = false, selectBasicNonMedical: basicNonMedical = false, selectBasicNonMedicalTripCancellation: basicNonMedicalTripCancellation = false }) => {
+  if (toBool(basic)) await selectBasic({ ...config, page });
+  else if (toBool(basicNonMedical)) await selectBasicNonMedical({ ...config, page });
+  else if (toBool(basicNonMedicalTripCancellation)) await selectBasicNonMedicalTripCancellation({ ...config, page });
   else {
     try {
       await page.waitForSelector('[data-step-index="2"]', { visible: true });

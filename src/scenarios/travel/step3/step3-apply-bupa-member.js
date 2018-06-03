@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page, { bupaMember = '7777777' } = {}) => {
+export default async ({ page }, { bupaMember = '7777777' } = {}) => {
   try {
     await page.waitForSelector('[data-step-index="3"]', { visible: true });
     /*

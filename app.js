@@ -93,7 +93,9 @@ const config = {
   env,
   headless,
   w,
-  h
+  h,
+  scenario,
+  timestamp: new Date()
 };
 
 const params = {
@@ -109,20 +111,20 @@ const params = {
 };
 
 if (nonStop) {
-  const executeNonStop = (c, p, n = 1) => (
+  const executeNonStop = ({ iteration, ...c }, p) => (
     execute(c, p)
       .then(() => {
-        Logger.info('\t', chalk.cyan(format(n)), `Scenario '${scenario}' has executed successfully - executing again ...`);
+        Logger.info('\t', chalk.cyan(format(iteration)), `Scenario '${scenario}' has executed successfully - executing again ...`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        Logger.error('\t', chalk.cyan(format(n)), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
+        Logger.error('\t', chalk.cyan(format(iteration)), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
       })
-      .then(() => executeNonStop(c, p, n + 1))
+      .then(() => executeNonStop({ ...c, iteration: iteration + 1 }, p))
   );
 
   Logger.info(`Executing scenario '${scenario}' non-stop ...`);
 
-  executeNonStop(config, params);
+  executeNonStop({ ...config, iteration: 1 }, params);
 } else {
   const executeOnce = (c, p) => (
     execute(c, p)

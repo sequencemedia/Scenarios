@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page) => {
+export default async ({ page }) => {
   try {
     await page.waitForSelector('.quote-input-container');
     await page.evaluate(() => { document.querySelector('.quote-input-container').scrollIntoView({ behaviour: 'instant' }); });

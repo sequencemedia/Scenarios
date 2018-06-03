@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page, {
+export default async ({ page }, {
   profile: {
     title = 'Mr',
     firstName = 'Jonathan',

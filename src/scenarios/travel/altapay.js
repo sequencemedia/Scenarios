@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page) => {
+export default async ({ page }) => {
   try {
     await page.waitForSelector('section.altapay-main-container');
     await page.type('#creditCardNumberInput', '4444444444444444');

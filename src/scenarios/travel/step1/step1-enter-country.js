@@ -1,6 +1,6 @@
 import Logger from 'app/logger';
 
-export default async (page, { countryName = 'United Kingdom' }) => {
+export default async ({ page }, { countryName = 'United Kingdom' }) => {
   try {
     await page.waitForSelector('.quote-input-country-container input.quote-input-country');
 

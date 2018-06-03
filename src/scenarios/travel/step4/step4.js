@@ -7,7 +7,7 @@ import enterEmail from './step4-enter-email';
 import selectOptIn from './step4-select-opt-in';
 import selectAcceptCondition from './step4-select-accept-conditions';
 
-export default async (page, { selectOptIn: optIn = false, selectAcceptConditions: acceptConditions = true, ...params } = {}) => {
+export default async ({ page, ...config }, { selectOptIn: optIn = false, selectAcceptConditions: acceptConditions = true, ...params } = {}) => {
   try {
     await page.waitForSelector('[data-step-index="4"]', { visible: true });
     /*
@@ -15,12 +15,12 @@ export default async (page, { selectOptIn: optIn = false, selectAcceptConditions
      */
     await page.click('[data-step-index="4"]');
 
-    await enterAddress(page, params);
+    await enterAddress({ ...config, page }, params);
 
-    await enterEmail(page, params);
+    await enterEmail({ ...config, page }, params);
 
-    if (toBool(optIn)) await selectOptIn(page, params);
-    if (toBool(acceptConditions)) await selectAcceptCondition(page, params);
+    if (toBool(optIn)) await selectOptIn({ ...config, page }, params);
+    if (toBool(acceptConditions)) await selectAcceptCondition({ ...config, page }, params);
 
     await page.click('[data-step-index="4"] .accept-conditions');
     await page.evaluate(() => { document.querySelector('[data-step-index="4"] .accept-conditions .buy-btn a').scrollIntoView({ behaviour: 'instant' }); });

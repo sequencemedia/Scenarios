@@ -38,6 +38,8 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "faker": "^4.1.0",
+    "fs-extra": "^6.0.1",
+    "moment": "^2.22.2",
     "npm": "^6.1.0",
     "puppeteer": "^1.4.0",
     "yargs-parser": "^10.0.0"

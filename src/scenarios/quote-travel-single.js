@@ -1,5 +1,9 @@
 import puppeteer from 'puppeteer';
+
+import path from 'path';
 import chalk from 'chalk';
+import moment from 'moment';
+import { ensureDir } from 'fs-extra';
 
 import Logger from 'app/logger';
 
@@ -20,15 +24,15 @@ const { step4 } = Step4;
 import enterSingleDates from './travel/step1/step1-enter-single-dates';
 import enterProfile from './travel/step1/step1-enter-profile';
 
-const step1 = async (page, params = {}) => {
+const step1 = async ({ page, ...config }, params = {}) => {
   try {
     await page.waitForSelector('[data-step-index="1"]', { visible: true });
     /*
      *  Weirdness
      */
-    await enterSingleDates(page, params);
+    await enterSingleDates({ ...config, page }, params);
 
-    await enterProfile(page, params);
+    await enterProfile({ ...config, page }, params);
 
     await page.click('[data-step-index="1"] button.cta-button');
   } catch ({ message = 'No error message is defined' }) {
@@ -41,14 +45,24 @@ export default async ({
   lang = 'en',
   headless = true,
   w: width = 1024,
-  h: height = 768
+  h: height = 768,
+  scenario,
+  timestamp = new Date(),
+  iteration = 0
 } = {}, params = {}) => {
+  const now = moment(timestamp)
+    .format('YYYYMMDD-HHmmss');
+  const dir = path.resolve((iteration)
+    ? `./log/${scenario}/${now}/${iteration}`
+    : `./log/${scenario}/${now}`);
+
   const browser = await puppeteer.launch({
     headless,
     args: [
       `--window-size=${width},${height}`
     ]
   });
+
   const page = await browser.newPage();
 
   await page.setViewport({ width, height });
@@ -127,23 +141,43 @@ export default async ({
 
   /* END NETWORK MONITORING */
 
+  const config = {
+    browser,
+    page,
+    client,
+    env,
+    lang,
+    headless,
+    w: width,
+    h: height,
+    scenario,
+    timestamp,
+    iteration,
+    now,
+    dir
+  };
+
   try {
-    await single(page, params);
+    await single(config, params);
 
     await page.waitForNavigation();
 
-    await step1(page, params);
-    await step2(page, params);
-    await step3(page, params);
-    await step4(page, params);
+    await step1(config, params);
+    await step2(config, params);
+    await step3(config, params);
+    await step4(config, params);
 
     await page.waitForNavigation();
 
-    await altapay(page, params);
+    await altapay(config, params);
 
     await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
   } catch ({ message = 'No error message is defined' }) {
-    Logger.error(`Error in scenario 'quote-travel-single'. ${message.trim()}`);
+    Logger.error(`Error in scenario '${scenario}'. ${message.trim()}`);
+
+    await ensureDir(dir);
+
+    await page.screenshot({ path: `${dir}/${scenario}.png`, fullPage: true });
   } finally {
     /* BEGIN NETWORK MONITORING */
 

@@ -2,7 +2,7 @@
 import toBool from 'app/to-bool';
 import Logger from 'app/logger';
 
-export default async (page, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
+export default async ({ page }, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
   try {
     await page.waitForSelector('.quote-travel .quote-input-container');
 

@@ -3,14 +3,14 @@ import Logger from 'app/logger';
 import selectSingle from './select-single';
 import enterCountry from './enter-country';
 
-export default async (page, params = {}) => {
+export default async ({ page, ...config }, params = {}) => {
   try {
     await page.focus('button[data-cover-type="travel"]');
     await page.click('button[data-cover-type="travel"]');
 
-    await selectSingle(page, params);
+    await selectSingle({ ...config, page }, params);
 
-    await enterCountry(page, params);
+    await enterCountry({ ...config, page }, params);
 
     await page.waitForSelector('.quote-continue');
     await page.evaluate(() => { document.querySelector('.quote-continue').scrollIntoView({ behaviour: 'instant' }); });
