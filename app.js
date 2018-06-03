@@ -112,12 +112,12 @@ const params = {
 
 if (nonStop) {
   const executeNonStop = ({ iteration, ...c }, p) => (
-    execute(c, p)
+    execute({ ...c, iteration }, p)
       .then(() => {
-        Logger.info('\t', chalk.cyan(format(iteration)), `Scenario '${scenario}' has executed successfully - executing again ...`);
+        Logger.info('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has executed successfully - executing again ...`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        Logger.error('\t', chalk.cyan(format(iteration)), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
+        Logger.error('\t', chalk.yellow(format(iteration)), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
       })
       .then(() => executeNonStop({ ...c, iteration: iteration + 1 }, p))
   );
