@@ -1,5 +1,9 @@
 import puppeteer from 'puppeteer';
 
+import Logger from 'app/logger';
+
+import transformUrl from 'app/transform-url';
+
 import {
   annual,
   step2 as Step2,
@@ -14,8 +18,6 @@ const { step4 } = Step4;
 
 import enterAnnualDates from './travel/step1/step1-enter-annual-dates';
 import enterProfile from './travel/step1/step1-enter-profile';
-
-// import Logger from 'app/logger';
 
 const step1 = async (page, params = {}) => {
   await page.waitForSelector('[data-step-index="1"]', { visible: true });
@@ -50,20 +52,110 @@ export default async ({
 
   await page.goto(`http://${env}/${lang}/quote`);
 
-  await annual(page, params);
+  /* BEGIN NETWORK MONITORING */
 
-  await page.waitForNavigation();
+  const requestMap = new Map();
 
-  await step1(page, params);
-  await step2(page, params);
-  await step3(page, params);
-  await step4(page, params);
+  const client = await page.target().createCDPSession();
+  await client.send('Emulation.clearDeviceMetricsOverride');
 
-  await page.waitForNavigation();
+  const getResponseBody = async (requestId) => {
+    const { body } = await client.send('Network.getResponseBody', { requestId });
+    return body;
+  };
 
-  await altapay(page, params);
+  const onNetworkRequestWillBeSent = (event = {}) => {
+    const { request: { url, method } } = event;
 
-  await page.waitForNavigation({ waitUntil: 'networkidle2' });
+    if (url.includes('omtrdc') && method === 'POST') {
+      const { requestId, request } = event;
 
-  await browser.close();
+      requestMap.set(requestId, request);
+
+      Logger.info('Network.requestWillBeSent', {
+        requestId,
+        url: transformUrl(url),
+        method
+      });
+    }
+  };
+
+  const onNetworkResponseReceived = ({
+    requestId,
+    response: {
+      url,
+      status,
+      statusText
+    }
+  }) => {
+    if (requestMap.has(requestId)) {
+      Logger.info('Network.responseReceived', {
+        requestId,
+        url: transformUrl(url),
+        status,
+        statusText
+      });
+    }
+  };
+
+  const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // Logger.info('Network.loadingFailed', { requestId, ...response });
+    if (requestMap.has(requestId)) {
+      Logger.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
+      requestMap.delete(requestId);
+    }
+  };
+
+  const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // Logger.info('Network.loadingFinished', { requestId, ...response });
+    if (requestMap.has(requestId)) {
+      Logger.info('Network.loadingFinished', { requestId });
+      requestMap.delete(requestId);
+    }
+  };
+
+  client.on('Network.requestWillBeSent', onNetworkRequestWillBeSent);
+
+  client.on('Network.responseReceived', onNetworkResponseReceived);
+
+  client.on('Network.loadingFailed', onNetworkLoadingFailed);
+
+  client.on('Network.loadingFinished', onNetworkLoadingFinished);
+
+  await client.send('Network.enable');
+
+  /* END NETWORK MONITORING */
+
+  try {
+    await annual(page, params);
+
+    await page.waitForNavigation();
+
+    await step1(page, params);
+    await step2(page, params);
+    await step3(page, params);
+    await step4(page, params);
+
+    await page.waitForNavigation();
+
+    await altapay(page, params);
+
+    await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
+  } catch ({ message = 'No error message is defined' }) {
+    Logger.error(`Error in scenario \`quote-travel-single\`. ${message.trim()}`);
+  } finally {
+    /* BEGIN NETWORK MONITORING */
+
+    await client.send('Network.disable');
+
+    client.removeListener('Network.requestWillBeSent', onNetworkRequestWillBeSent);
+
+    client.removeListener('Network.responseReceived', onNetworkResponseReceived);
+
+    client.removeListener('Network.loadingFailed', onNetworkLoadingFailed);
+
+    client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
+
+    /* END NETWORK MONITORING */
+
+    await browser.close();
+  }
 };

@@ -1,5 +1,9 @@
 import puppeteer from 'puppeteer';
 
+import Logger from 'app/logger';
+
+import transformUrl from 'app/transform-url';
+
 import {
   single,
   step2 as Step2,
@@ -14,10 +18,6 @@ const { step4 } = Step4;
 
 import enterSingleDates from './travel/step1/step1-enter-single-dates';
 import enterProfile from './travel/step1/step1-enter-profile';
-
-import Logger from 'app/logger';
-
-const transformUrl = (url = '') => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
 
 const step1 = async (page, params = {}) => {
   try {

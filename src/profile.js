@@ -12,12 +12,14 @@ let date;
   date = faker.date.between(alpha, omega);
 }
 
+const titles = ['Miss', 'Mr', 'Mrs', 'Ms'];
+
 export default (
   args.has('fake')
     ? {
       firstName: faker.name.firstName(),
       lastName: faker.name.firstName(),
-      title: 'Mr', // faker.name.title(),
+      title: titles[Math.floor(Math.random() * Math.floor(5))],
       day: date.getDate().toString(),
       month: (date.getMonth() + 1).toString(),
       year: date.getFullYear().toString()
