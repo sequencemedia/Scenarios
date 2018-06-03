@@ -1,6 +1,8 @@
+import { ensureDir } from 'fs-extra';
+
 import Logger from 'app/logger';
 
-export default async ({ page }, { bupaMember = '7777777' } = {}) => {
+export default async ({ page, ...config }, { bupaMember = '7777777' } = {}) => {
   try {
     await page.waitForSelector('[data-step-index="3"]', { visible: true });
     /*
@@ -19,5 +21,24 @@ export default async ({ page }, { bupaMember = '7777777' } = {}) => {
     await page.click('[data-step-index="3"] [data-tracking="cta:click:continue-to-checkout"] button.quote-cta-next');
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 3 - Apply Bupa Member. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/step-3-bupa-member.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };

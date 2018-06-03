@@ -1,6 +1,8 @@
+import { ensureDir } from 'fs-extra';
+
 import Logger from 'app/logger';
 
-export default async ({ page }) => {
+export default async ({ page, ...config }) => {
   try {
     await page.waitForSelector('[data-step-index="4"]', { visible: true });
     /*
@@ -19,5 +21,24 @@ export default async ({ page }) => {
     await page.click('[data-step-index="4"] .accept-conditions .tickbox-input');
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 4 - Select Accept Conditions. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/step-4-select-accept-conditions.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };

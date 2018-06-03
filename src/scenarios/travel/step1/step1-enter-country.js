@@ -1,6 +1,8 @@
+import { ensureDir } from 'fs-extra';
+
 import Logger from 'app/logger';
 
-export default async ({ page }, { countryName = 'United Kingdom' }) => {
+export default async ({ page, ...config }, { countryName = 'United Kingdom' }) => {
   try {
     await page.waitForSelector('.quote-input-country-container input.quote-input-country');
 
@@ -13,5 +15,24 @@ export default async ({ page }, { countryName = 'United Kingdom' }) => {
       });
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/step-1-enter-country.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };

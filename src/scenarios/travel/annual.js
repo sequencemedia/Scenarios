@@ -1,3 +1,5 @@
+import { ensureDir } from 'fs-extra';
+
 import Logger from 'app/logger';
 
 import selectAnnual from './select-annual';
@@ -20,5 +22,24 @@ export default async ({ page, ...config }, params = {}) => {
     await page.click('button[data-tracking="click:quote:step-0:cta:continue"]');
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Annual. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/annual.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };

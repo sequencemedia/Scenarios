@@ -51,9 +51,11 @@ const onExit = (code = 0) => {
   if (code === 0 || code === 130) Logger.info(message);
   else Logger.error(message);
 
-  const { size = 0 } = requestMap;
+  if (toBool(args.get('captureNetwork'))) {
+    const { size = 0 } = requestMap;
 
-  Logger.info('\t', chalk.yellow(format(size)), (size === 1) ? 'Request.' : 'Requests.');
+    Logger.info('\t', chalk.yellow(format(size)), (size === 1) ? 'Request.' : 'Requests.');
+  }
 
   process.exitCode = (code === 1)
     ? 1
@@ -86,6 +88,7 @@ const nonStop = toBool(args.get('nonStop'));
 const headless = !toBool(args.has('head'));
 const w = args.get('w');
 const h = args.get('h');
+const captureNetwork = toBool(args.get('captureNetwork'));
 
 const selectPredictedCountry = args.get('selectPredictedCountry');
 const selectBasic = args.get('selectBasic');
@@ -100,7 +103,8 @@ const config = {
   w,
   h,
   scenario,
-  timestamp: new Date()
+  timestamp: new Date(),
+  captureNetwork
 };
 
 const params = {

@@ -1,8 +1,10 @@
 /* eslint no-shadow: "off", no-param-reassign: "off" */
+import { ensureDir } from 'fs-extra';
+
 import toBool from 'app/to-bool';
 import Logger from 'app/logger';
 
-export default async ({ page }, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
+export default async ({ page, ...config }, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
   try {
     await page.waitForSelector('.quote-travel .quote-input-container');
 
@@ -22,5 +24,24 @@ export default async ({ page }, { selectPredictedCountry = false, countryName = 
     }
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Enter Country. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/enter-country.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };

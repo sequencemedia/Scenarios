@@ -1,4 +1,6 @@
 /* eslint no-nested-ternary: "off" */
+import { ensureDir } from 'fs-extra';
+
 import toBool from 'app/to-bool';
 import Logger from 'app/logger';
 
@@ -22,6 +24,25 @@ export default async ({ page, ...config }, { selectBasic: basic = false, selectB
       await page.click('[data-step-index="2"] button.buy-cta');
     } catch ({ message = 'No error message is defined' }) {
       Logger.error(`Error in Step 2. ${message.trim()}`);
+
+      const {
+        dir,
+        w: width,
+        h: height
+      } = config;
+
+      await ensureDir(dir);
+
+      await page.screenshot({
+        path: `${dir}/step-2.png`,
+        fullPage: true,
+        clip: {
+          x: 0,
+          y: 0,
+          width,
+          height
+        }
+      });
     }
   }
 };

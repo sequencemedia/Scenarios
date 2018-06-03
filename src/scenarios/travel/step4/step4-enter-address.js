@@ -1,6 +1,8 @@
+import { ensureDir } from 'fs-extra';
+
 import Logger from 'app/logger';
 
-export default async ({ page }, {
+export default async ({ page, ...config }, {
   address: {
     address1 = '4 Callisons Place',
     address2 = 'Bellot Street',
@@ -23,5 +25,24 @@ export default async ({ page }, {
     await page.type('[data-step-index="4"] input#address_zip', zip);
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 4 - Enter Address. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/step-4-enter-address.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };

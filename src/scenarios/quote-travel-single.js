@@ -38,6 +38,25 @@ const step1 = async ({ page, ...config }, params = {}) => {
     await page.click('[data-step-index="1"] button.cta-button');
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 1. ${message.trim()}`);
+
+    const {
+      dir,
+      w: width,
+      h: height
+    } = config;
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/step-1.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   }
 };
 
@@ -51,7 +70,8 @@ export default async ({
   timestamp = new Date(),
   iteration = 0,
   now = getNow(timestamp),
-  dir = getDir(iteration, scenario, now)
+  dir = getDir(iteration, scenario, now),
+  captureNetwork = false
 } = {}, params = {}) => {
   const browser = await puppeteer.launch({
     headless,
@@ -89,11 +109,7 @@ export default async ({
   };
 
   try {
-    /* BEGIN NETWORK MONITORING */
-
-    await attach();
-
-    /* END NETWORK MONITORING */
+    if (captureNetwork) await attach();
 
     await page.goto(`http://${env}/${lang}/quote`);
 
@@ -129,10 +145,6 @@ export default async ({
   } finally {
     await browser.close();
 
-    /* BEGIN NETWORK MONITORING */
-
-    await detach();
-
-    /* END NETWORK MONITORING */
+    if (captureNetwork) await detach();
   }
 };
