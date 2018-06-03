@@ -1,4 +1,3 @@
-
 import faker from 'faker/locale/en_GB';
 
 import args from 'app/args';

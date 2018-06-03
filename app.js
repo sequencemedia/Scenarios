@@ -4,8 +4,6 @@ require('babel-register');
 
 const chalk = require('chalk');
 
-const args = require('./lib/args').default;
-
 const {
   PRODUCTION,
   STAGING,
@@ -14,14 +12,16 @@ const {
   DEV
 } = require('./lib/environments');
 
-const Logger = require('./lib/logger').default;
+const args = require('./lib/args').default;
+
+const onExit = require('./lib/on-exit').default;
 const scenarios = require('./lib/scenarios').default;
 const profile = require('./lib/profile').default;
 const address = require('./lib/address').default;
 const contact = require('./lib/contact').default;
 const toBool = require('./lib/to-bool').default;
 const format = require('./lib/format').default;
-const onExit = require('./lib/on-exit').default;
+const Logger = require('./lib/logger').default;
 
 process.once('exit', onExit);
 
