@@ -30,6 +30,8 @@ const step1 = async ({ page, ...config }, params = {}) => {
     /*
      *  Weirdness
      */
+    await page.click('[data-step-index="1"]');
+
     await enterSingleDates({ ...config, page }, params);
 
     await enterProfile({ ...config, page }, params);
@@ -177,7 +179,16 @@ export default async ({
 
     await ensureDir(dir);
 
-    await page.screenshot({ path: `${dir}/${scenario}.png`, fullPage: true });
+    await page.screenshot({
+      path: `${dir}/${scenario}.png`,
+      fullPage: true,
+      clip: {
+        x: 0,
+        y: 0,
+        width,
+        height
+      }
+    });
   } finally {
     /* BEGIN NETWORK MONITORING */
 
