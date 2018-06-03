@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import chalk from 'chalk';
 
 import Logger from 'app/logger';
 
@@ -91,7 +92,7 @@ export default async ({
     }
   }) => {
     if (requestMap.has(requestId)) {
-      Logger.info('Network.responseReceived', {
+      Logger.info(chalk.cyan('Network.responseReceived'), '\n', {
         requestId,
         url: transformUrl(url),
         status,
@@ -102,14 +103,14 @@ export default async ({
 
   const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // Logger.info('Network.loadingFailed', { requestId, ...response });
     if (requestMap.has(requestId)) {
-      Logger.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
+      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...response, requestId }, await getResponseBody(requestId));
       requestMap.delete(requestId);
     }
   };
 
   const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // Logger.info('Network.loadingFinished', { requestId, ...response });
     if (requestMap.has(requestId)) {
-      Logger.info('Network.loadingFinished', { requestId });
+      Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { requestId });
       requestMap.delete(requestId);
     }
   };
@@ -142,7 +143,7 @@ export default async ({
 
     await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
   } catch ({ message = 'No error message is defined' }) {
-    Logger.error(`Error in scenario \`quote-travel-single\`. ${message.trim()}`);
+    Logger.error(`Error in scenario 'quote-travel-single'. ${message.trim()}`);
   } finally {
     /* BEGIN NETWORK MONITORING */
 
