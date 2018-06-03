@@ -1,9 +1,9 @@
 import puppeteer from 'puppeteer';
 
-import path from 'path';
-import moment from 'moment';
 import { ensureDir } from 'fs-extra';
 
+import getNow from 'app/get-now';
+import getDir from 'app/get-dir';
 import Logger from 'app/logger';
 
 import network from 'app/client/network';
@@ -49,14 +49,10 @@ export default async ({
   h: height = 768,
   scenario,
   timestamp = new Date(),
-  iteration = 0
+  iteration = 0,
+  now = getNow(timestamp),
+  dir = getDir(iteration, scenario, now)
 } = {}, params = {}) => {
-  const now = moment(timestamp)
-    .format('YYYYMMDD-HHmmss');
-  const dir = path.resolve((iteration)
-    ? `./log/${scenario}/${now}/${iteration}`
-    : `./log/${scenario}/${now}`);
-
   const browser = await puppeteer.launch({
     headless,
     args: [
@@ -68,10 +64,6 @@ export default async ({
 
   await page.setViewport({ width, height });
 
-  await page.goto(`http://${env}/${lang}/quote`);
-
-  /* BEGIN NETWORK MONITORING */
-
   const client = await page.target().createCDPSession();
   await client.send('Emulation.clearDeviceMetricsOverride');
 
@@ -79,10 +71,6 @@ export default async ({
     attach,
     detach
   } = network(client);
-
-  await attach();
-
-  /* END NETWORK MONITORING */
 
   const config = {
     browser,
@@ -101,6 +89,14 @@ export default async ({
   };
 
   try {
+    /* BEGIN NETWORK MONITORING */
+
+    await attach();
+
+    /* END NETWORK MONITORING */
+
+    await page.goto(`http://${env}/${lang}/quote`);
+
     await annual(config, params);
 
     await page.waitForNavigation();
@@ -131,12 +127,12 @@ export default async ({
       }
     });
   } finally {
+    await browser.close();
+
     /* BEGIN NETWORK MONITORING */
 
     await detach();
 
     /* END NETWORK MONITORING */
-
-    await browser.close();
   }
 };
