@@ -13,7 +13,7 @@ const getResponseBody = async (client, requestId) => {
 export default function (client) {
   const onNetworkRequestWillBeSent = ({ requestId, request, request: { url, method } }) => {
     if (!requestMap.has(requestId)) {
-      requestMap.set(requestId, request);
+      requestMap.set(requestId, { request });
 
       Logger.info(chalk.cyan('Network.requestWillBeSent'), '\n', {
         requestId,
@@ -32,6 +32,16 @@ export default function (client) {
     }
   }) => {
     if (requestMap.has(requestId)) {
+      requestMap.set(requestId, {
+        ...requestMap.get(requestId),
+        response: {
+          requestId,
+          url: transformUrl(url),
+          status,
+          statusText
+        }
+      });
+
       Logger.info(chalk.cyan('Network.responseReceived'), '\n', {
         requestId,
         url: transformUrl(url),
@@ -41,17 +51,32 @@ export default function (client) {
     }
   };
 
-  const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // Logger.info('Network.loadingFailed', { requestId, ...response });
+  const onNetworkLoadingFailed = async ({ requestId, ...failed } = {}) => {
     if (requestMap.has(requestId)) {
-      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...response, requestId }, await getResponseBody(client, requestId));
-      requestMap.delete(requestId);
+      requestMap.set(requestId, {
+        ...requestMap.get(requestId),
+        failed: {
+          requestId,
+          ...failed,
+          body: await getResponseBody(client, requestId)
+        }
+      });
+
+      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId }, await getResponseBody(client, requestId));
     }
   };
 
-  const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // Logger.info('Network.loadingFinished', { requestId, ...response });
+  const onNetworkLoadingFinished = ({ requestId, ...finished }) => {
     if (requestMap.has(requestId)) {
-      Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { requestId });
-      requestMap.delete(requestId);
+      requestMap.set(requestId, {
+        ...requestMap.get(requestId),
+        finished: {
+          requestId,
+          ...finished
+        }
+      });
+
+      Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { ...finished, requestId });
     }
   };
 

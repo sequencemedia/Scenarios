@@ -53,7 +53,7 @@ const onExit = (code = 0) => {
 
   const { size = 0 } = requestMap;
 
-  Logger.info('\t', chalk.yellow(format(size)), (size === 1) ? 'Request unresolved.' : 'Requests unresolved.');
+  Logger.info('\t', chalk.yellow(format(size)), (size === 1) ? 'Request.' : 'Requests.');
 
   process.exitCode = (code === 1)
     ? 1
