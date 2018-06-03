@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page, { campaignCode = 'family15' }) => {
   try {
     await page.waitForSelector('[data-step-index="3"]', { visible: true });
@@ -17,6 +18,6 @@ export default async (page, { campaignCode = 'family15' }) => {
 
     await page.click('[data-step-index="3"] [data-tracking="cta:click:continue-to-checkout"] button.quote-cta-next');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 3 - Apply Campaign Code. ${message.trim()}`);
+    Logger.error(`Error in Step 3 - Apply Campaign Code. ${message.trim()}`);
   }
 };

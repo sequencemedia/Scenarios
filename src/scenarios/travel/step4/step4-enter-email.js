@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page, { contact: { email = 'jonathan.perry@valtech.co.uk' } = {} } = {}) => {
   try {
     await page.waitForSelector('[data-step-index="4"]', { visible: true });
@@ -12,6 +13,6 @@ export default async (page, { contact: { email = 'jonathan.perry@valtech.co.uk' 
     await page.type('[data-step-index="4"] input.email-address-js', email);
     await page.type('[data-step-index="4"] input.confirm-email-address-js', email);
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 4 - Enter Email. ${message.trim()}`);
+    Logger.error(`Error in Step 4 - Enter Email. ${message.trim()}`);
   }
 };

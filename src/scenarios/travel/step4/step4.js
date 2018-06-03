@@ -1,5 +1,6 @@
-/* eslint no-console: "off", no-nested-ternary: "off" */
+/* eslint no-nested-ternary: "off" */
 import toBool from 'app/to-bool';
+import Logger from 'app/logger';
 
 import enterAddress from './step4-enter-address';
 import enterEmail from './step4-enter-email';
@@ -27,6 +28,6 @@ export default async (page, { selectOptIn: optIn = false, selectAcceptConditions
     await page.focus('[data-step-index="4"] .accept-conditions .buy-btn a');
     await page.click('[data-step-index="4"] .accept-conditions .buy-btn a');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 4. ${message.trim()}`);
+    Logger.error(`Error in Step 4. ${message.trim()}`);
   }
 };

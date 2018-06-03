@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page) => {
   try {
     await page.waitForSelector('[data-step-index="2"]', { visible: true });
@@ -11,6 +12,6 @@ export default async (page) => {
 
     await page.click('[data-step-index="2"] [data-product-index="0"] button.buy-cta');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 2 - Select Basic. ${message.trim()}`);
+    Logger.error(`Error in Step 2 - Select Basic. ${message.trim()}`);
   }
 };

@@ -1,8 +1,8 @@
-/* eslint no-nested-ternary: "off", no-console: "off" */
+/* eslint no-nested-ternary: "off" */
 
 require('babel-register');
 
-const { args } = require('./lib/args');
+const args = require('./lib/args').default;
 
 const {
   PRODUCTION,
@@ -12,10 +12,11 @@ const {
   DEV
 } = require('./lib/environments');
 
-const { scenarios } = require('./lib/scenarios');
-const { profile } = require('./lib/profile');
-const { address } = require('./lib/address');
-const { contact } = require('./lib/contact');
+const Logger = require('./lib/logger').default;
+const scenarios = require('./lib/scenarios').default;
+const profile = require('./lib/profile').default;
+const address = require('./lib/address').default;
+const contact = require('./lib/contact').default;
 const toBool = require('./lib/to-bool').default;
 const format = require('./lib/format').default;
 
@@ -25,7 +26,7 @@ const onExit = (code) => {
   let message;
   switch (code) {
     case 130:
-      message = ` - Execution of scenario '${scenario}' has been stopped.`;
+      message = `Execution of scenario '${scenario}' has been stopped.`;
       break;
     case 1:
       message = 'Boom!';
@@ -40,8 +41,12 @@ const onExit = (code) => {
       message = `Execution of scenario '${scenario}' is complete.`;
       break;
   }
-  if (code === 0) console.info(message);
-  else console.error(message);
+
+  process.stdout.clearLine();
+  process.stdout.cursorTo(0);
+
+  if (code === 0 || code === 130) Logger.info(message);
+  else Logger.error(message);
 
   process.exitCode = (code === 1)
     ? 1
@@ -105,30 +110,30 @@ if (nonStop) {
   const executeNonStop = (c, p, n = 1) => (
     execute(c, p)
       .then(() => {
-        console.info('\n', '\t', format(n), `Scenario '${scenario}' has executed successfully - executing again ...`, '\n');
+        Logger.info('\t', format(n), `Scenario '${scenario}' has executed successfully - executing again ...`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        console.error('\n', '\t', format(n), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`, '\n');
+        Logger.error('\t', format(n), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
       })
       .then(() => executeNonStop(c, p, n + 1))
   );
 
-  console.info(`Executing scenario '${scenario}' non-stop ...`, '\n');
+  Logger.info(`Executing scenario '${scenario}' non-stop ...`);
 
   executeNonStop(config, params);
 } else {
   const executeOnce = (c, p) => (
     execute(c, p)
       .then(() => {
-        console.info('\n', `Scenario '${scenario}' has executed successfully.`, '\n');
+        Logger.info(`Scenario '${scenario}' has executed successfully.`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        console.error('\n', `Scenario ${scenario} has not executed successfully. ${message.trim()}`, '\n');
+        Logger.error(`Scenario ${scenario} has not executed successfully. ${message.trim()}`);
       })
       .then(() => process.exit())
   );
 
-  console.info(`Executing scenario '${scenario}' ...`, '\n');
+  Logger.info(`Executing scenario '${scenario}' ...`);
 
   executeOnce(config, params);
 }

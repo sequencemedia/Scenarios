@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 import selectSingle from './select-single';
 import enterCountry from './enter-country';
 
@@ -18,6 +19,6 @@ export default async (page, params = {}) => {
     await page.focus('button[data-tracking="click:quote:step-0:cta:continue"]');
     await page.click('button[data-tracking="click:quote:step-0:cta:continue"]');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Single. ${message.trim()}`);
+    Logger.error(`Error in Single. ${message.trim()}`);
   }
 };

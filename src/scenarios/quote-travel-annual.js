@@ -15,6 +15,8 @@ const { step4 } = Step4;
 import enterAnnualDates from './travel/step1/step1-enter-annual-dates';
 import enterProfile from './travel/step1/step1-enter-profile';
 
+// import Logger from 'app/logger';
+
 const step1 = async (page, params = {}) => {
   await page.waitForSelector('[data-step-index="1"]', { visible: true });
   /*

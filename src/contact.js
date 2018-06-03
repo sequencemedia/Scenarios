@@ -1,9 +1,9 @@
 
 import faker from 'faker/locale/en_GB';
 
-import { args } from 'app/args';
+import args from 'app/args';
 
-export const contact = (
+export default (
   args.has('fake')
     ? {
       email: faker.internet.email()

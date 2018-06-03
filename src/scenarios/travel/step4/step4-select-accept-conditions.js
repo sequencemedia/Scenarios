@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page) => {
   try {
     await page.waitForSelector('[data-step-index="4"]', { visible: true });
@@ -17,6 +18,6 @@ export default async (page) => {
     await page.focus('[data-step-index="4"] .accept-conditions .tickbox-input');
     await page.click('[data-step-index="4"] .accept-conditions .tickbox-input');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 4 - Select Accept Conditions. ${message.trim()}`);
+    Logger.error(`Error in Step 4 - Select Accept Conditions. ${message.trim()}`);
   }
 };

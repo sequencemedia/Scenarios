@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page) => {
   try {
     await page.waitForSelector('.quote-input-container');
@@ -7,6 +8,6 @@ export default async (page) => {
     await page.focus('button[data-cover-period="single"]');
     await page.click('button[data-cover-period="single"]');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Select Single. ${message.trim()}`);
+    Logger.error(`Error in Select Single. ${message.trim()}`);
   }
 };

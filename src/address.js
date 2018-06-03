@@ -1,6 +1,6 @@
 import faker from 'faker/locale/en_GB';
 
-import { args } from 'app/args';
+import args from 'app/args';
 
 export const address = (
   args.has('fake')

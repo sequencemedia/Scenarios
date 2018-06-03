@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page) => {
   try {
     await page.waitForSelector('[data-step-index="1"]', { visible: true });
@@ -18,6 +19,6 @@ export default async (page) => {
 
     await page.evaluate(() => { document.querySelector('[data-step-index="1"] select#month-select').selectedIndex = 1; });
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
+    Logger.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
   }
 };

@@ -1,4 +1,4 @@
-/* eslint no-console: "off", no-shadow: "off", no-param-reassign: "off" */
+/* eslint no-shadow: "off", no-param-reassign: "off" */
 /*
 import { countries } from 'app/countries';
 
@@ -43,6 +43,7 @@ export default async (page, { countryName = 'United Kingdom' }) => {
 */
 
 import toBool from 'app/to-bool';
+import Logger from 'app/logger';
 
 export default async (page, { selectPredictedCountry = false, countryName = 'United Kingdom' }) => {
   try {
@@ -63,7 +64,7 @@ export default async (page, { selectPredictedCountry = false, countryName = 'Uni
       });
     }
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Enter Country. ${message.trim()}`);
+    Logger.error(`Error in Enter Country. ${message.trim()}`);
   }
 };
 

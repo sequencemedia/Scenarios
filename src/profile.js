@@ -1,6 +1,6 @@
 import faker from 'faker/locale/en_GB';
 
-import { args } from 'app/args';
+import args from 'app/args';
 
 let date;
 {
@@ -12,7 +12,7 @@ let date;
   date = faker.date.between(alpha, omega);
 }
 
-export const profile = (
+export default (
   args.has('fake')
     ? {
       firstName: faker.name.firstName(),

@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page, {
   address: {
     address1 = '4 Callisons Place',
@@ -21,6 +22,6 @@ export default async (page, {
     await page.type('[data-step-index="4"] input#address_city', city);
     await page.type('[data-step-index="4"] input#address_zip', zip);
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 4 - Enter Address. ${message.trim()}`);
+    Logger.error(`Error in Step 4 - Enter Address. ${message.trim()}`);
   }
 };

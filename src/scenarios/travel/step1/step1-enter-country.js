@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page, { countryName = 'United Kingdom' }) => {
   try {
     await page.waitForSelector('.quote-input-country-container input.quote-input-country');
@@ -11,6 +12,6 @@ export default async (page, { countryName = 'United Kingdom' }) => {
         await country.type(countryName);
       });
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
+    Logger.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
   }
 };

@@ -1,5 +1,3 @@
-/* eslint no-console: "off" */
-
 import puppeteer from 'puppeteer';
 
 import {
@@ -17,6 +15,8 @@ const { step4 } = Step4;
 import enterSingleDates from './travel/step1/step1-enter-single-dates';
 import enterProfile from './travel/step1/step1-enter-profile';
 
+import Logger from 'app/logger';
+
 const transformUrl = (url = '') => url.includes('?') ? url.substr(0, url.indexOf('?')) : url;
 
 const step1 = async (page, params = {}) => {
@@ -31,7 +31,7 @@ const step1 = async (page, params = {}) => {
 
     await page.click('[data-step-index="1"] button.cta-button');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Step 1. ${message.trim()}`);
+    Logger.error(`Error in Step 1. ${message.trim()}`);
   }
 };
 
@@ -74,7 +74,7 @@ export default async ({
 
       requestMap.set(requestId, request);
 
-      console.info('Network.requestWillBeSent', {
+      Logger.info('Network.requestWillBeSent', {
         requestId,
         url: transformUrl(url),
         method
@@ -91,7 +91,7 @@ export default async ({
     }
   }) => {
     if (requestMap.has(requestId)) {
-      console.info('Network.responseReceived', {
+      Logger.info('Network.responseReceived', {
         requestId,
         url: transformUrl(url),
         status,
@@ -100,16 +100,16 @@ export default async ({
     }
   };
 
-  const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // console.info('Network.loadingFailed', { requestId, ...response });
+  const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // Logger.info('Network.loadingFailed', { requestId, ...response });
     if (requestMap.has(requestId)) {
-      console.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
+      Logger.info('Network.loadingFailed', { ...response, requestId }, await getResponseBody(requestId));
       requestMap.delete(requestId);
     }
   };
 
-  const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // console.info('Network.loadingFinished', { requestId, ...response });
+  const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // Logger.info('Network.loadingFinished', { requestId, ...response });
     if (requestMap.has(requestId)) {
-      console.info('Network.loadingFinished', { requestId });
+      Logger.info('Network.loadingFinished', { requestId });
       requestMap.delete(requestId);
     }
   };
@@ -142,7 +142,7 @@ export default async ({
 
     await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in scenario \`quote-travel-single\`. ${message.trim()}`);
+    Logger.error(`Error in scenario \`quote-travel-single\`. ${message.trim()}`);
   } finally {
     /* BEGIN NETWORK MONITORING */
 

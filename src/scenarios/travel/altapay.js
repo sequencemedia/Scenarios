@@ -1,4 +1,5 @@
-/* eslint no-console: "off" */
+import Logger from 'app/logger';
+
 export default async (page) => {
   try {
     await page.waitForSelector('section.altapay-main-container');
@@ -8,6 +9,6 @@ export default async (page) => {
     await page.evaluate(() => { document.querySelector('input[type="submit"]').scrollIntoView({ behaviour: 'instant' }); });
     await page.click('input[type="submit"]');
   } catch ({ message = 'No error message is defined' }) {
-    console.error(`Error in Altapay. ${message.trim()}`);
+    Logger.error(`Error in Altapay. ${message.trim()}`);
   }
 };

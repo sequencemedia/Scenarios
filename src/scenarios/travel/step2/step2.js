@@ -1,5 +1,6 @@
-/* eslint no-console: "off", no-nested-ternary: "off" */
+/* eslint no-nested-ternary: "off" */
 import toBool from 'app/to-bool';
+import Logger from 'app/logger';
 
 import selectBasic from './step2-select-basic';
 import selectBasicNonMedical from './step2-select-basic-non-medical';
@@ -20,7 +21,7 @@ export default async (page, { selectBasic: basic = false, selectBasicNonMedical:
 
       await page.click('[data-step-index="2"] button.buy-cta');
     } catch ({ message = 'No error message is defined' }) {
-      console.error(`Error in Step 2. ${message.trim()}`);
+      Logger.error(`Error in Step 2. ${message.trim()}`);
     }
   }
 };

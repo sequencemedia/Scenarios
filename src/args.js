@@ -1,3 +1,3 @@
 const parser = require('yargs-parser');
 
-export const args = new Map(Object.entries(parser(process.argv.slice(2))));
+export default new Map(Object.entries(parser(process.argv.slice(2))));
