@@ -75,7 +75,7 @@ export default async ({
 
       requestMap.set(requestId, request);
 
-      Logger.info('Network.requestWillBeSent', {
+      Logger.info(chalk.cyan('Network.requestWillBeSent'), '\n', {
         requestId,
         url: transformUrl(url),
         method
