@@ -5,6 +5,7 @@ require('babel-register');
 const chalk = require('chalk');
 
 const args = require('./lib/args').default;
+const requestMap = require('./lib/request-map').default;
 
 const {
   PRODUCTION,
@@ -24,7 +25,7 @@ const format = require('./lib/format').default;
 
 const scenario = args.get('scenario');
 
-const onExit = (code) => {
+const onExit = (code = 0) => {
   let message;
   switch (code) {
     case 130:
@@ -49,6 +50,10 @@ const onExit = (code) => {
 
   if (code === 0 || code === 130) Logger.info(message);
   else Logger.error(message);
+
+  const { size = 0 } = requestMap;
+
+  Logger.info('\t', chalk.yellow(format(size)), (size === 1) ? 'Request unresolved.' : 'Requests unresolved.');
 
   process.exitCode = (code === 1)
     ? 1

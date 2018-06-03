@@ -1,13 +1,12 @@
 import puppeteer from 'puppeteer';
 
 import path from 'path';
-import chalk from 'chalk';
 import moment from 'moment';
 import { ensureDir } from 'fs-extra';
 
 import Logger from 'app/logger';
 
-import transformUrl from 'app/transform-url';
+import network from 'app/client/network';
 
 import {
   annual,
@@ -73,73 +72,15 @@ export default async ({
 
   /* BEGIN NETWORK MONITORING */
 
-  const requestMap = new Map();
-
   const client = await page.target().createCDPSession();
   await client.send('Emulation.clearDeviceMetricsOverride');
 
-  const getResponseBody = async (requestId) => {
-    const { body } = await client.send('Network.getResponseBody', { requestId });
-    return body;
-  };
+  const {
+    attach,
+    detach
+  } = network(client);
 
-  const onNetworkRequestWillBeSent = (event = {}) => {
-    const { request: { url, method } } = event;
-
-    if (url.includes('omtrdc') && method === 'POST') {
-      const { requestId, request } = event;
-
-      requestMap.set(requestId, request);
-
-      Logger.info(chalk.cyan('Network.requestWillBeSent'), '\n', {
-        requestId,
-        url: transformUrl(url),
-        method
-      });
-    }
-  };
-
-  const onNetworkResponseReceived = ({
-    requestId,
-    response: {
-      url,
-      status,
-      statusText
-    }
-  }) => {
-    if (requestMap.has(requestId)) {
-      Logger.info(chalk.cyan('Network.responseReceived'), '\n', {
-        requestId,
-        url: transformUrl(url),
-        status,
-        statusText
-      });
-    }
-  };
-
-  const onNetworkLoadingFailed = async ({ requestId, ...response } = {}) => { // Logger.info('Network.loadingFailed', { requestId, ...response });
-    if (requestMap.has(requestId)) {
-      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...response, requestId }, await getResponseBody(requestId));
-      requestMap.delete(requestId);
-    }
-  };
-
-  const onNetworkLoadingFinished = ({ requestId }) => { // , ...response }) => { // Logger.info('Network.loadingFinished', { requestId, ...response });
-    if (requestMap.has(requestId)) {
-      Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { requestId });
-      requestMap.delete(requestId);
-    }
-  };
-
-  client.on('Network.requestWillBeSent', onNetworkRequestWillBeSent);
-
-  client.on('Network.responseReceived', onNetworkResponseReceived);
-
-  client.on('Network.loadingFailed', onNetworkLoadingFailed);
-
-  client.on('Network.loadingFinished', onNetworkLoadingFinished);
-
-  await client.send('Network.enable');
+  await attach();
 
   /* END NETWORK MONITORING */
 
@@ -192,15 +133,7 @@ export default async ({
   } finally {
     /* BEGIN NETWORK MONITORING */
 
-    await client.send('Network.disable');
-
-    client.removeListener('Network.requestWillBeSent', onNetworkRequestWillBeSent);
-
-    client.removeListener('Network.responseReceived', onNetworkResponseReceived);
-
-    client.removeListener('Network.loadingFailed', onNetworkLoadingFailed);
-
-    client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
+    await detach();
 
     /* END NETWORK MONITORING */
 
