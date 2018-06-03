@@ -8,6 +8,6 @@ export default async (page) => {
     await page.focus('button[data-cover-period="annual"]');
     await page.click('button[data-cover-period="annual"]');
   } catch ({ message = 'No error message is defined' }) {
-    Logger.error(`Error in Select Single. ${message.trim()}`);
+    Logger.error(`Error in Select Annual. ${message.trim()}`);
   }
 };

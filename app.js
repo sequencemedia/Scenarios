@@ -2,6 +2,8 @@
 
 require('babel-register');
 
+const chalk = require('chalk');
+
 const args = require('./lib/args').default;
 
 const {
@@ -110,10 +112,10 @@ if (nonStop) {
   const executeNonStop = (c, p, n = 1) => (
     execute(c, p)
       .then(() => {
-        Logger.info('\t', format(n), `Scenario '${scenario}' has executed successfully - executing again ...`);
+        Logger.info('\t', chalk.cyan(format(n)), `Scenario '${scenario}' has executed successfully - executing again ...`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        Logger.error('\t', format(n), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
+        Logger.error('\t', chalk.cyan(format(n)), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
       })
       .then(() => executeNonStop(c, p, n + 1))
   );

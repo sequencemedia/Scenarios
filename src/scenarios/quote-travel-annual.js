@@ -140,7 +140,7 @@ export default async ({
 
     await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
   } catch ({ message = 'No error message is defined' }) {
-    Logger.error(`Error in scenario \`quote-travel-single\`. ${message.trim()}`);
+    Logger.error(`Error in scenario \`quote-travel-annual\`. ${message.trim()}`);
   } finally {
     /* BEGIN NETWORK MONITORING */
 
