@@ -100,6 +100,7 @@ export default function ({
         client.on('Network.loadingFinished', onNetworkLoadingFinished);
       })
       .then(() => {
+        Logger.warn(chalk.cyan('Network.enable'));
         client.send('Network.enable');
       })
       .catch(({ message = 'No error message is defined' }) => {
@@ -110,9 +111,6 @@ export default function ({
   const detach = () => (
     Promise.resolve()
       .then(() => {
-        client.send('Network.disable');
-      })
-      .then(() => {
         client.removeListener('Network.requestWillBeSent', onNetworkRequestWillBeSent);
 
         client.removeListener('Network.responseReceived', onNetworkResponseReceived);
@@ -120,6 +118,10 @@ export default function ({
         client.removeListener('Network.loadingFailed', onNetworkLoadingFailed);
 
         client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
+      })
+      .then(() => {
+        Logger.warn(chalk.cyan('Network.disable'));
+        client.send('Network.disable');
       })
       .catch(({ message = 'No error message is defined' }) => {
         Logger.error(message);

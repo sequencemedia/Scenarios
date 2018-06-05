@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import chalk from 'chalk';
 
 import { ensureDir } from 'fs-extra';
 
@@ -65,6 +66,8 @@ export default async ({
   dir = getDir(iteration, scenario, now),
   captureNetwork = false
 } = {}, params = {}) => {
+  Logger.warn(chalk.cyan('puppeteer.launch()'));
+
   const browser = await puppeteer.launch({
     headless,
     args: [
@@ -130,7 +133,11 @@ export default async ({
     });
   } finally {
     if (captureNetwork) await networkEvents.detach();
+  }
 
+  try {
     await browser.close();
+  } catch ({ message = 'No error message is defined' }) {
+    Logger.error(`Error calling 'browser.close()' in '${scenario}'. ${message.trim()}`);
   }
 };

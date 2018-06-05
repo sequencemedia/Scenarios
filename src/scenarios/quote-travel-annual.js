@@ -130,7 +130,11 @@ export default async ({
     });
   } finally {
     if (captureNetwork) await networkEvents.detach();
+  }
 
+  try {
     await browser.close();
+  } catch ({ message = 'No error message is defined' }) {
+    Logger.error(`Error calling 'browser.close()' in '${scenario}'. ${message.trim()}`);
   }
 };
