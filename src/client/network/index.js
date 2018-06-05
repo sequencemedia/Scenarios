@@ -2,18 +2,28 @@ import chalk from 'chalk';
 
 import Logger from 'app/logger';
 
-import requestMap from 'app/request-map';
 import transformUrl from 'app/transform-url';
 
-const getResponseBody = async (client, requestId) => {
-  const { body } = await client.send('Network.getResponseBody', { requestId });
-  return body;
-};
+export const map = new Map();
 
-export default function (client) {
-  const onNetworkRequestWillBeSent = ({ requestId, request, request: { url, method } }) => {
-    if (!requestMap.has(requestId)) {
-      requestMap.set(requestId, { request });
+export default function ({
+  iteration,
+  scenario,
+  timestamp = new Date(),
+  client
+}) {
+  const onNetworkRequestWillBeSent = ({
+    requestId,
+    request,
+    request: { url, method }
+  }) => {
+    if (!map.has(requestId)) {
+      map.set(requestId, {
+        iteration,
+        scenario,
+        timestamp,
+        request
+      });
 
       Logger.info(chalk.cyan('Network.requestWillBeSent'), '\n', {
         requestId,
@@ -25,20 +35,19 @@ export default function (client) {
 
   const onNetworkResponseReceived = ({
     requestId,
+    response,
     response: {
       url,
       status,
       statusText
     }
   }) => {
-    if (requestMap.has(requestId)) {
-      requestMap.set(requestId, {
-        ...requestMap.get(requestId),
+    if (map.has(requestId)) {
+      map.set(requestId, {
+        ...map.get(requestId),
         response: {
           requestId,
-          url: transformUrl(url),
-          status,
-          statusText
+          ...response
         }
       });
 
@@ -52,24 +61,23 @@ export default function (client) {
   };
 
   const onNetworkLoadingFailed = async ({ requestId, ...failed } = {}) => {
-    if (requestMap.has(requestId)) {
-      requestMap.set(requestId, {
-        ...requestMap.get(requestId),
+    if (map.has(requestId)) {
+      map.set(requestId, {
+        ...map.get(requestId),
         failed: {
           requestId,
-          ...failed,
-          body: await getResponseBody(client, requestId)
+          ...failed
         }
       });
 
-      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId }, await getResponseBody(client, requestId));
+      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId });
     }
   };
 
   const onNetworkLoadingFinished = ({ requestId, ...finished }) => {
-    if (requestMap.has(requestId)) {
-      requestMap.set(requestId, {
-        ...requestMap.get(requestId),
+    if (map.has(requestId)) {
+      map.set(requestId, {
+        ...map.get(requestId),
         finished: {
           requestId,
           ...finished
@@ -94,6 +102,9 @@ export default function (client) {
       .then(() => {
         client.send('Network.enable');
       })
+      .catch(({ message = 'No error message is defined' }) => {
+        Logger.error(message);
+      })
   );
 
   const detach = () => (
@@ -109,6 +120,9 @@ export default function (client) {
         client.removeListener('Network.loadingFailed', onNetworkLoadingFailed);
 
         client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
+      })
+      .catch(({ message = 'No error message is defined' }) => {
+        Logger.error(message);
       })
   );
 

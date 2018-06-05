@@ -40,22 +40,14 @@ const step1 = async ({ page, ...config }, params = {}) => {
     Logger.error(`Error in Step 1. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/step-1.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };
@@ -87,11 +79,6 @@ export default async ({
   const client = await page.target().createCDPSession();
   await client.send('Emulation.clearDeviceMetricsOverride');
 
-  const {
-    attach,
-    detach
-  } = network(client);
-
   const config = {
     browser,
     page,
@@ -108,10 +95,15 @@ export default async ({
     dir
   };
 
-  try {
-    if (captureNetwork) await attach();
+  let networkEvents;
 
-    await page.goto(`http://${env}/${lang}/quote`);
+  try {
+    if (captureNetwork) {
+      networkEvents = network(config);
+      await networkEvents.attach();
+    }
+
+    await page.goto(`https://${env}/${lang}/quote`);
 
     await single(config, params);
 
@@ -134,17 +126,11 @@ export default async ({
 
     await page.screenshot({
       path: `${dir}/${scenario}.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   } finally {
-    await browser.close();
+    if (captureNetwork) await networkEvents.detach();
 
-    if (captureNetwork) await detach();
+    await browser.close();
   }
 };

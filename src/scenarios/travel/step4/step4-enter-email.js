@@ -18,22 +18,14 @@ export default async ({ page, ...config }, { contact: { email = 'jonathan.perry@
     Logger.error(`Error in Step 4 - Enter Email. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/step-4-enter-email.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };

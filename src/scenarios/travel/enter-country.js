@@ -26,22 +26,14 @@ export default async ({ page, ...config }, { selectPredictedCountry = false, cou
     Logger.error(`Error in Enter Country. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/enter-country.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };

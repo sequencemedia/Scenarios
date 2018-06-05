@@ -32,22 +32,14 @@ export default async ({ page, ...config }, {
     Logger.error(`Error in Step 1 - Enter Single Dates. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/step-1-enter-profile.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };

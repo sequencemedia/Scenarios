@@ -24,22 +24,14 @@ export default async ({ page, ...config }, params = {}) => {
     Logger.error(`Error in Single. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/single.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };

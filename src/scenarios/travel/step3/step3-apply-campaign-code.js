@@ -23,22 +23,14 @@ export default async ({ page, ...config }, { campaignCode = 'family15' }) => {
     Logger.error(`Error in Step 3 - Apply Campaign Code. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/step-3-apply-campaign-code.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };

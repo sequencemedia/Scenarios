@@ -31,22 +31,14 @@ export default async ({ page, ...config }, { brokerCode = '123456789' } = {}) =>
     Logger.error(`Error in Step 3 - Apply Broker Code. ${message.trim()}`);
 
     const {
-      dir,
-      w: width,
-      h: height
+      dir
     } = config;
 
     await ensureDir(dir);
 
     await page.screenshot({
       path: `${dir}/step-3-broker-code.png`,
-      fullPage: true,
-      clip: {
-        x: 0,
-        y: 0,
-        width,
-        height
-      }
+      fullPage: true
     });
   }
 };

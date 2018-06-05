@@ -1,13 +1,13 @@
 
-import chalk from 'chalk';
+// import chalk from 'chalk';
 
 import args from 'app/args';
 
 import Logger from 'app/logger';
 import toBool from 'app/to-bool';
-import format from 'app/format';
+// import format from 'app/format';
 
-import requestMap from 'app/request-map';
+import networkWriter from 'app/client/network/writer';
 
 const scenario = args.get('scenario');
 
@@ -39,11 +39,7 @@ export default (code = 0) => {
   if (code === 0 || code === 130) Logger.info(message);
   else Logger.error(message);
 
-  if (toBool(args.get('captureNetwork'))) {
-    const { size = 0 } = requestMap;
-
-    Logger.info('\t', chalk.yellow(format(size)), (size === 1) ? 'Request.' : 'Requests.');
-  }
+  if (toBool(args.get('captureNetwork'))) networkWriter();
 
   process.exitCode = (code === 1)
     ? 1
