@@ -1,8 +1,8 @@
-import chalk from 'chalk';
+// import chalk from 'chalk';
 
 import Logger from 'app/logger';
 
-import transformUrl from 'app/transform-url';
+// import transformUrl from 'app/transform-url';
 
 export const map = new Map();
 
@@ -14,8 +14,8 @@ export default function ({
 }) {
   const onNetworkRequestWillBeSent = ({
     requestId,
-    request,
-    request: { url, method }
+    request /* ,
+    request: { url, method } */
   }) => {
     if (!map.has(requestId)) {
       map.set(requestId, {
@@ -24,23 +24,23 @@ export default function ({
         timestamp,
         request
       });
-
+      /*
       Logger.info(chalk.cyan('Network.requestWillBeSent'), '\n', {
         requestId,
         url: transformUrl(url),
         method
-      });
+      }); */
     }
   };
 
   const onNetworkResponseReceived = ({
     requestId,
-    response,
+    response /* ,
     response: {
       url,
       status,
       statusText
-    }
+    } */
   }) => {
     if (map.has(requestId)) {
       map.set(requestId, {
@@ -50,13 +50,13 @@ export default function ({
           ...response
         }
       });
-
+      /*
       Logger.info(chalk.cyan('Network.responseReceived'), '\n', {
         requestId,
         url: transformUrl(url),
         status,
         statusText
-      });
+      }); */
     }
   };
 
@@ -70,7 +70,7 @@ export default function ({
         }
       });
 
-      Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId });
+      // Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId });
     }
   };
 
@@ -84,7 +84,7 @@ export default function ({
         }
       });
 
-      Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { ...finished, requestId });
+      // Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { ...finished, requestId });
     }
   };
 
@@ -99,10 +99,7 @@ export default function ({
 
         client.on('Network.loadingFinished', onNetworkLoadingFinished);
       })
-      .then(() => {
-        Logger.warn(chalk.cyan('Network.enable'));
-        client.send('Network.enable');
-      })
+      .then(() => client.send('Network.enable'))
       .catch(({ message = 'No error message is defined' }) => {
         Logger.error(message);
       })
@@ -119,10 +116,7 @@ export default function ({
 
         client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
       })
-      .then(() => {
-        Logger.warn(chalk.cyan('Network.disable'));
-        client.send('Network.disable');
-      })
+      .then(() => client.send('Network.disable'))
       .catch(({ message = 'No error message is defined' }) => {
         Logger.error(message);
       })

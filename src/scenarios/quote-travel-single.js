@@ -66,8 +66,6 @@ export default async ({
   dir = getDir(iteration, scenario, now),
   captureNetwork = false
 } = {}, params = {}) => {
-  Logger.warn(chalk.cyan('puppeteer.launch()'));
-
   const browser = await puppeteer.launch({
     headless,
     args: [
