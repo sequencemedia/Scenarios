@@ -108,7 +108,9 @@ export default () => {
                       status,
                       statusText,
                       isEmpty(failed),
-                      ...(!isEmpty(failed) ? [type, errorText, canceled] : ['', '', '']),
+                      type,
+                      errorText,
+                      canceled,
                       timestamp,
                       scenario,
                       iteration
