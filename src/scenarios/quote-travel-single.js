@@ -133,9 +133,10 @@ export default async ({
       fullPage: true
     });
   } finally {
-    if (captureNetwork) await networkEvents.detach();
-
-    if (captureNetwork) await networkWriter();
+    if (captureNetwork) {
+      await networkEvents.detach();
+      await networkWriter();
+    }
   }
 
   try {

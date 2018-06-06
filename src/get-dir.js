@@ -1,7 +1,8 @@
 import path from 'path';
+import artifacts from 'app/artifacts';
 
 export default (iteration, scenario, timestamp) => (
   path.resolve((iteration)
-    ? `./log/${scenario}/${timestamp}/${iteration}`
-    : `./log/${scenario}/${timestamp}`)
+    ? `${artifacts}/${scenario}/${timestamp}/${iteration}`
+    : `${artifacts}/${scenario}/${timestamp}`)
 );

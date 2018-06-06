@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "build": "rm -r lib ; babel src -d lib",
-    "start": "npm run build -- --quiet && node app"
+    "start": "npm run build -- --quiet ; node --require dotenv/config app"
   },
   "repository": {
     "type": "git",
@@ -38,10 +38,10 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "csv-write-stream": "^2.0.0",
+    "dotenv": "^6.0.0",
     "faker": "^4.1.0",
     "fs-extra": "^6.0.1",
     "moment": "^2.22.2",
-    "npm": "^6.1.0",
     "puppeteer": "^1.4.0",
     "yargs-parser": "^10.0.0"
   }

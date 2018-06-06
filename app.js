@@ -1,7 +1,5 @@
 /* eslint no-nested-ternary: "off" */
 
-require('babel-register');
-
 const chalk = require('chalk');
 
 const {
@@ -36,15 +34,17 @@ const {
 } = scenarios;
 
 const env = (
-  args.has('production')
-    ? PRODUCTION
-    : args.has('staging')
-      ? STAGING
-      : args.has('uat')
-        ? UAT
-        : args.has('qa')
-          ? QA
-          : DEV
+  args.has('url')
+    ? args.get('url')
+    : args.has('production')
+      ? PRODUCTION
+      : args.has('staging')
+        ? STAGING
+        : args.has('uat')
+          ? UAT
+          : args.has('qa')
+            ? QA
+            : DEV
 );
 
 const nonStop = toBool(args.get('nonStop'));

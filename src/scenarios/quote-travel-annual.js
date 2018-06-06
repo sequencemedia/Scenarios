@@ -6,7 +6,8 @@ import getNow from 'app/get-now';
 import getDir from 'app/get-dir';
 import Logger from 'app/logger';
 
-import network from 'app/client/network';
+import network, { map as networkMap } from 'app/client/network';
+import networkWriter from 'app/client/network/writer';
 
 import {
   annual,
@@ -98,6 +99,8 @@ export default async ({
   let networkEvents;
 
   try {
+    networkMap.clear();
+
     if (captureNetwork) {
       networkEvents = network(config);
       await networkEvents.attach();
@@ -129,7 +132,10 @@ export default async ({
       fullPage: true
     });
   } finally {
-    if (captureNetwork) await networkEvents.detach();
+    if (captureNetwork) {
+      await networkEvents.detach();
+      await networkWriter();
+    }
   }
 
   try {

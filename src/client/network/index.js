@@ -102,6 +102,7 @@ export default function ({
 
   const detach = () => (
     Promise.resolve()
+      .then(() => client.send('Network.disable'))
       .then(() => {
         client.removeListener('Network.requestWillBeSent', onNetworkRequestWillBeSent);
 
@@ -111,7 +112,6 @@ export default function ({
 
         client.removeListener('Network.loadingFinished', onNetworkLoadingFinished);
       })
-      .then(() => client.send('Network.disable'))
       .catch(({ message = 'No error message is defined' }) => {
         Logger.error(message);
       })
