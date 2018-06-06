@@ -1,8 +1,8 @@
-// import chalk from 'chalk';
+import chalk from 'chalk';
 
 import Logger from 'app/logger';
 
-// import transformUrl from 'app/transform-url';
+import transformUrl from 'app/transform-url';
 
 export const map = new Map();
 
@@ -14,8 +14,7 @@ export default function ({
 }) {
   const onNetworkRequestWillBeSent = ({
     requestId,
-    request /* ,
-    request: { url, method } */
+    request
   }) => {
     if (!map.has(requestId)) {
       map.set(requestId, {
@@ -24,23 +23,12 @@ export default function ({
         timestamp,
         request
       });
-      /*
-      Logger.info(chalk.cyan('Network.requestWillBeSent'), '\n', {
-        requestId,
-        url: transformUrl(url),
-        method
-      }); */
     }
   };
 
   const onNetworkResponseReceived = ({
     requestId,
-    response /* ,
-    response: {
-      url,
-      status,
-      statusText
-    } */
+    response
   }) => {
     if (map.has(requestId)) {
       map.set(requestId, {
@@ -50,13 +38,6 @@ export default function ({
           ...response
         }
       });
-      /*
-      Logger.info(chalk.cyan('Network.responseReceived'), '\n', {
-        requestId,
-        url: transformUrl(url),
-        status,
-        statusText
-      }); */
     }
   };
 
@@ -70,7 +51,23 @@ export default function ({
         }
       });
 
-      // Logger.info(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId });
+      const {
+        request: {
+          method,
+          url
+        } = {},
+        response: {
+          status,
+          statusText
+        } = {}
+      } = map.get(requestId);
+
+      Logger.error(chalk.red('Network.loadingFailed'), '\n', { ...failed, requestId }, {
+        method,
+        url: transformUrl(url),
+        ...(status ? { status } : {}),
+        ...(statusText ? { statusText } : {})
+      });
     }
   };
 
@@ -83,8 +80,6 @@ export default function ({
           ...finished
         }
       });
-
-      // Logger.info(chalk.cyan('Network.loadingFinished'), '\n', { ...finished, requestId });
     }
   };
 

@@ -1,39 +1,123 @@
-// import path from 'path';
-// import fs from 'fs-extra';
-// import chalk from 'chalk';
+import path from 'path';
+import fs, { ensureFile } from 'fs-extra';
 
-// import Writer from 'csv-stream-writer';
+import Writer from 'csv-write-stream';
 
 import { map } from 'app/client/network';
-// import getDir from 'app/get-dir';
-// import getNow from 'app/get-now';
-import Logger from 'app/logger';
+import getDir from 'app/get-dir';
+import getNow from 'app/get-now';
 
-// import headers from './headers';
+// const isEmpty = (object = {}) => !!Reflect.ownKeys(object).length;
 
-// const writer = Writer({ headers });
+const isEmpty = (object = {}) => {
+  for (let key in object) return false; // eslint-disable-line
+  return true;
+};
 
 export default () => {
-  const array = Array
-    .from(map.values())
-    .reduce((accumulator, { timestamp }) => (accumulator.includes(timestamp) ? accumulator : accumulator.concat(timestamp)), []);
+  const values = Array
+    .from(map.values());
 
-  Logger.info(array);
+  const timestamps = values
+    .reduce((accumulator, { timestamp }) => (
+      accumulator.includes(timestamp)
+        ? accumulator
+        : accumulator.concat(timestamp)
+    ), []);
 
-  /*
-  const f = `${getDir(iteration, scenario, timestamp)}/${getNow(timestamp)} Network.csv`;
-  const p = path.resolve(f);
-  if (fs.pathExistsSync(p)) return writer;
-  const w = fs.createWriteStream(p);
-  return writer
-    .pipe((
-      w
-        .on('close', () => {
-          Logger.info(chalk.cyan('[close]'), f);
-        })
-        .on('error', (e) => {
-          Logger.error(e);
-        })
-    ));
-  */
+  timestamps
+    .forEach((timestamp) => {
+      const scenarios = values
+        .filter(({ timestamp: t }) => timestamp === t)
+        .reduce((accumulator, { scenario }) => (
+          accumulator.includes(scenario)
+            ? accumulator
+            : accumulator.concat(scenario)
+        ), []);
+
+      scenarios
+        .forEach((scenario) => {
+          const iterations = values
+            .filter(({ timestamp: t, scenario: s }) => timestamp === t && scenario === s)
+            .reduce((accumulator, { iteration }) => (
+              accumulator.includes(iteration)
+                ? accumulator
+                : accumulator.concat(iteration)
+            ), []);
+
+          iterations
+            .forEach(async (iteration) => {
+              const f = `${getDir(iteration, scenario, getNow(timestamp))}/network.csv`;
+              const p = path.resolve(f);
+
+              await ensureFile(p);
+
+              const writeStream = fs.createWriteStream(p);
+              const writer = Writer({
+                headers: [
+                  'Index',
+                  'Method',
+                  'URL',
+                  'Referer',
+                  'Status',
+                  'Status Text',
+                  'Succeeded',
+                  'Type',
+                  'Error Text',
+                  'Cancelled',
+                  'Timestamp',
+                  'Scenario',
+                  'Iteration'
+                ]
+              });
+
+              await new Promise((resolve, reject) => {
+                writeStream
+                  .on('close', resolve)
+                  .on('error', reject);
+
+                writer
+                  .pipe(writeStream);
+
+                values
+                  .filter(({ timestamp: t, scenario: s, iteration: i }) => timestamp === t && scenario === s && iteration === i)
+                  .forEach(({
+                    request: {
+                      method,
+                      url,
+                      headers: {
+                        Referer: referer = ''
+                      }
+                    },
+                    response: {
+                      status,
+                      statusText
+                    } = {},
+                    failed = {},
+                    failed: {
+                      type,
+                      errorText,
+                      canceled
+                    } = {}
+                  }, index) => {
+                    writer.write([
+                      index,
+                      method,
+                      url,
+                      referer,
+                      status,
+                      statusText,
+                      isEmpty(failed),
+                      ...(!isEmpty(failed) ? [type, errorText, canceled] : ['', '', '']),
+                      timestamp,
+                      scenario,
+                      iteration
+                    ]);
+                  });
+
+                writer.end();
+              });
+            });
+        });
+    });
 };

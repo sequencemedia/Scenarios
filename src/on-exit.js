@@ -4,14 +4,10 @@
 import args from 'app/args';
 
 import Logger from 'app/logger';
-import toBool from 'app/to-bool';
-// import format from 'app/format';
-
-import networkWriter from 'app/client/network/writer';
 
 const scenario = args.get('scenario');
 
-export default (code = 0) => {
+export default async (code = 0) => {
   let message;
   switch (code) {
     case 130:
@@ -38,8 +34,6 @@ export default (code = 0) => {
 
   if (code === 0 || code === 130) Logger.info(message);
   else Logger.error(message);
-
-  if (toBool(args.get('captureNetwork'))) networkWriter();
 
   process.exitCode = (code === 1)
     ? 1

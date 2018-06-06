@@ -1,7 +1,7 @@
 import path from 'path';
 
-export default (iteration, scenario, now) => (
+export default (iteration, scenario, timestamp) => (
   path.resolve((iteration)
-    ? `./log/${scenario}/${now}/${iteration}`
-    : `./log/${scenario}/${now}`)
+    ? `./log/${scenario}/${timestamp}/${iteration}`
+    : `./log/${scenario}/${timestamp}`)
 );

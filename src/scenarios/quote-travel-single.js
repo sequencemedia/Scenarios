@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import chalk from 'chalk';
+// import chalk from 'chalk';
 
 import { ensureDir } from 'fs-extra';
 
@@ -7,7 +7,8 @@ import getNow from 'app/get-now';
 import getDir from 'app/get-dir';
 import Logger from 'app/logger';
 
-import network from 'app/client/network';
+import network, { map as networkMap } from 'app/client/network';
+import networkWriter from 'app/client/network/writer';
 
 import {
   single,
@@ -99,6 +100,8 @@ export default async ({
   let networkEvents;
 
   try {
+    networkMap.clear();
+
     if (captureNetwork) {
       networkEvents = network(config);
       await networkEvents.attach();
@@ -131,6 +134,8 @@ export default async ({
     });
   } finally {
     if (captureNetwork) await networkEvents.detach();
+
+    if (captureNetwork) await networkWriter();
   }
 
   try {
