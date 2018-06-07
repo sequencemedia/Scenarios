@@ -49,7 +49,7 @@ const concatenate = ([head, ...body]) => {
       body.reduce((accumulator, current) => {
         const c = current.trim();
 
-        return (c && !(c.includes(h)))
+        return (c && !c.includes(h))
           ? accumulator.concat(c)
           : accumulator;
       }, [])))
