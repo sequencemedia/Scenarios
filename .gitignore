@@ -339,3 +339,6 @@ _Pvt_Extensions
 
 # Log
 log
+
+# Concatenate
+concatenate/*.csv

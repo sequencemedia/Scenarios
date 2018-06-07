@@ -1,25 +1,25 @@
 /* eslint no-nested-ternary: "off" */
 
-const chalk = require('chalk');
+import chalk from 'chalk';
 
-const {
+import {
   PRODUCTION,
   STAGING,
   UAT,
   QA,
   DEV
-} = require('./lib/environments');
+} from 'app/environments';
 
-const args = require('./lib/args').default;
+import args from 'app/args';
 
-const onExit = require('./lib/on-exit').default;
-const scenarios = require('./lib/scenarios').default;
-const profile = require('./lib/profile').default;
-const address = require('./lib/address').default;
-const contact = require('./lib/contact').default;
-const toBool = require('./lib/to-bool').default;
-const format = require('./lib/format').default;
-const Logger = require('./lib/logger').default;
+import onExit from 'app/on-exit';
+import scenarios from 'app/scenarios';
+import profile from 'app/profile';
+import address from 'app/address';
+import contact from 'app/contact';
+import toBool from 'app/to-bool';
+import format from 'app/format';
+import Logger from 'app/logger';
 
 process.once('exit', onExit);
 
