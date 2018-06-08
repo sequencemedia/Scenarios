@@ -26,46 +26,50 @@ const normalizeLine = (string) => {
   return s.trim();
 };
 
-const transformFromBuffer = (buffer) => convertStringToArray(normalizeFile(convertBufferToString(buffer)));
-const transformToString = (array) => (
-  convertArrayToString((
-    array.reduce((accumulator, current) => {
-      const c = normalizeLine(current);
+const reduce = (accumulator, currentLine) => {
+  const line = normalizeLine(currentLine);
 
-      return (c)
-        ? accumulator.concat(c)
-        : accumulator;
-    }, [])))
-);
+  return (line)
+    ? accumulator.concat(line)
+    : accumulator;
+};
 
-const mapFilePathList = (filePathList) => Promise.all(filePathList.map((f) => readFile(f)));
-const writeCancatenatedCSV = (filePath, fileData) => writeFile(filePath, fileData);
+const transformFileToArray = (f) => convertStringToArray(normalizeFile(convertBufferToString(f)));
+const transformArrayToFile = (a) => convertArrayToString(a.reduce(reduce, []));
 
-const concatenate = ([head, ...body]) => {
+const readAllCSVs = (filePathList) => Promise.all(filePathList.map((f) => readFile(f)));
+
+const writeConcatenatedCSV = (filePath, fileData) => writeFile(filePath, fileData);
+
+const transformFiles = (fileDataList) => fileDataList.map(transformFileToArray);
+
+const concatenate = ([[head = '', ...body] = [], ...rest] = []) => {
   const h = head.trim();
 
   return (
-    [head].concat((
-      body.reduce((accumulator, current) => {
-        const c = current.trim();
+    [].concat(
+      head,
+      body,
+      rest.reduce((accumulator, [HEAD = '', ...BODY] = []) => {
+        const H = HEAD.trim();
 
-        return (c && !c.includes(h))
-          ? accumulator.concat(c)
-          : accumulator;
-      }, [])))
+        return (H && !h.includes(H))
+          ? accumulator.concat(HEAD, BODY)
+          : accumulator.concat(BODY);
+      }, [])
+    )
   );
 };
+
+const concatenateArrays = (a) => transformArrayToFile(concatenate(a));
 
 /*
  *  OMFG
  */
-const concatatenateCSVs = (filePath, filePathList) => (
+const concatenateAllCSVs = (filePath, filePathList) => (
   ensureFile(filePath)
-    .then(() => mapFilePathList(filePathList))
-    .then(transformFromBuffer)
-    .then(concatenate)
-    .then(transformToString)
-    .then((fileData) => writeCancatenatedCSV(filePath, fileData))
+    .then(() => transformFiles(readAllCSVs(filePathList)))
+    .then((fileDataList) => writeConcatenatedCSV(filePath, concatenateArrays(fileDataList)))
     .catch((reason) => {
       Logger.error(reason);
       process.exit(2);
@@ -74,4 +78,4 @@ const concatatenateCSVs = (filePath, filePathList) => (
 
 const getFilePath = () => `./concatenate/${getNow()}.csv`;
 
-glob([`${artifacts}/**/*.csv`, `!${getFilePath()}`], async (e, filePathList) => await (e) ? process.exit(1) : concatatenateCSVs(getFilePath(), filePathList));
+glob([`${artifacts}/**/*.csv`, `!${getFilePath()}`], async (e, filePathList) => await (e) ? process.exit(1) : concatenateAllCSVs(getFilePath(), filePathList));
