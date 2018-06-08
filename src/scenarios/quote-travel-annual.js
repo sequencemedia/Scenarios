@@ -106,22 +106,29 @@ export default async ({
       await networkEvents.attach();
     }
 
-    await page.goto(`https://${env}/${lang}/quote`);
+    await page.goto(`https://${env}/${lang}/quote`, { waitUntil: ['networkidle2', 'load'] });
 
     await annual(config, params);
 
-    await page.waitForNavigation();
+    await page.waitForNavigation({ waitUntil: ['networkidle0', 'networkidle2', 'load'] });
 
     await step1(config, params);
     await step2(config, params);
     await step3(config, params);
     await step4(config, params);
 
-    await page.waitForNavigation();
+    await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
 
     await altapay(config, params);
 
     await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
+
+    await ensureDir(dir);
+
+    await page.screenshot({
+      path: `${dir}/step-4-confirmation.png`,
+      fullPage: true
+    });
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in scenario '${scenario}'. ${message.trim()}`);
 

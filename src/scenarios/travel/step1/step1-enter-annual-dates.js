@@ -12,7 +12,6 @@ export default async ({ page, ...config }) => {
 
     await page.waitForSelector('[data-step-index="1"] .annual-insurance-period');
     await page.evaluate(() => { document.querySelector('[data-step-index="1"] .annual-insurance-period').scrollIntoView({ behaviour: 'instant' }); });
-
     /*
      *  Weirdness
      */

@@ -1,6 +1,3 @@
-
-// import chalk from 'chalk';
-
 import args from 'app/args';
 
 import Logger from 'app/logger';

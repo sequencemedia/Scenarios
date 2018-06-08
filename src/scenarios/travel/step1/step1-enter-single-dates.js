@@ -12,7 +12,6 @@ export default async ({ page, ...config }) => {
 
     await page.waitForSelector('[data-step-index="1"] .single-insurance-period');
     await page.evaluate(() => { document.querySelector('[data-step-index="1"] .single-insurance-period').scrollIntoView({ behaviour: 'instant' }); });
-
     /*
      *  Weirdness
      */
@@ -22,7 +21,6 @@ export default async ({ page, ...config }) => {
     await page.waitForSelector('.datepicker', { visible: true });
 
     await page.click('.datepicker .day:not(.disabled)');
-
     /*
      *  Weirdness
      */
