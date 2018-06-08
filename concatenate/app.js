@@ -63,6 +63,7 @@ const writeConcatenatedCSV = (filePath, fileData) => writeFile(filePath, fileDat
 
 const transformFiles = (a) => a.map(transformFileToArray);
 const concatenateArrays = (a) => transformArrayToFile(concatenate(a));
+const createFileData = (a) => concatenateArrays(transformFiles(a));
 
 /*
  *  OMFG
@@ -70,8 +71,7 @@ const concatenateArrays = (a) => transformArrayToFile(concatenate(a));
 const concatenateAllCSVs = (filePath, filePathList) => (
   ensureFile(filePath)
     .then(() => readAllCSVs(filePathList))
-    .then(transformFiles)
-    .then(concatenateArrays)
+    .then(createFileData)
     .then((fileData) => writeConcatenatedCSV(filePath, fileData))
     .catch((reason) => {
       Logger.error(reason);
