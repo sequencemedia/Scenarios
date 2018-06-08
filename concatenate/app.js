@@ -26,22 +26,6 @@ const normalizeLine = (string) => {
   return s.trim();
 };
 
-const reduce = (accumulator, currentLine) => {
-  const line = normalizeLine(currentLine);
-
-  return (line)
-    ? accumulator.concat(line)
-    : accumulator;
-};
-
-const transformFileToArray = (f) => convertStringToArray(normalizeFile(convertBufferToString(f)));
-const transformArrayToFile = (a) => convertArrayToString(a.reduce(reduce, []));
-
-const readAllCSVs = (filePathList) => Promise.all(filePathList.map((f) => readFile(f)));
-
-const writeConcatenatedCSV = (filePath, fileData) => writeFile(filePath, fileData);
-
-const transformFiles = (fileDataList) => fileDataList.map(transformFileToArray);
 
 const concatenate = ([[head = '', ...body] = [], ...rest] = []) => {
   const h = head.trim();
@@ -61,6 +45,22 @@ const concatenate = ([[head = '', ...body] = [], ...rest] = []) => {
   );
 };
 
+const reduce = (accumulator, currentLine) => {
+  const line = normalizeLine(currentLine);
+
+  return (line)
+    ? accumulator.concat(line)
+    : accumulator;
+};
+
+const transformFileToArray = (f) => convertStringToArray(normalizeFile(convertBufferToString(f)));
+const transformArrayToFile = (a) => convertArrayToString(a.reduce(reduce, []));
+
+const readAllCSVs = (filePathList) => Promise.all(filePathList.map((f) => readFile(f)));
+
+const writeConcatenatedCSV = (filePath, fileData) => writeFile(filePath, fileData);
+
+const transformFiles = (a) => a.map(transformFileToArray);
 const concatenateArrays = (a) => transformArrayToFile(concatenate(a));
 
 /*
@@ -68,8 +68,10 @@ const concatenateArrays = (a) => transformArrayToFile(concatenate(a));
  */
 const concatenateAllCSVs = (filePath, filePathList) => (
   ensureFile(filePath)
-    .then(() => transformFiles(readAllCSVs(filePathList)))
-    .then((fileDataList) => writeConcatenatedCSV(filePath, concatenateArrays(fileDataList)))
+    .then(() => readAllCSVs(filePathList))
+    .then(transformFiles)
+    .then(concatenateArrays)
+    .then((fileData) => writeConcatenatedCSV(filePath, fileData))
     .catch((reason) => {
       Logger.error(reason);
       process.exit(2);

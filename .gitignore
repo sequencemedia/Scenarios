@@ -343,3 +343,6 @@ log
 # Concatenate
 concatenate/*.csv
 concatenate/*.xlsx
+
+# Archive
+archived-artifacts
