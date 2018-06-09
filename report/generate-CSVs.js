@@ -57,28 +57,27 @@ const concatenate = ([[head = '', ...body] = [], ...rest] = []) => {
 const transformFileToArray = (f) => convertStringToArray(normalizeFile(convertBufferToString(f)));
 const transformArrayToFile = (a) => convertArrayToString(normalizeAllLines(a));
 
-const readAllCSVs = (filePathList) => Promise.all(filePathList.map((f) => readFile(f)));
+const readAllCSVs = (filePathList) => Promise.all(filePathList.map((filePath) => readFile(filePath)));
 
-const writeConcatenatedCSV = (filePath, fileData) => writeFile(filePath, fileData);
+const writeConcatenatedCSV = (filePath, fileData) => ensureFile(filePath).then(() => writeFile(filePath, fileData));
 
 const transformFiles = (a) => a.map(transformFileToArray);
 const concatenateArrays = (a) => transformArrayToFile(concatenate(a));
 const createFileData = (a) => concatenateArrays(transformFiles(a));
 
+const getFilePath = () => `./report/${getNow()}.csv`;
+
 /*
  *  OMFG
  */
-const concatenateAllCSVs = (filePath, filePathList) => (
-  ensureFile(filePath)
-    .then(() => readAllCSVs(filePathList))
+const generateAllCSVs = (filePathList) => (
+  readAllCSVs(filePathList)
     .then(createFileData)
-    .then((fileData) => writeConcatenatedCSV(filePath, fileData))
+    .then((fileData) => writeConcatenatedCSV(getFilePath(), fileData))
     .catch((reason) => {
       Logger.error(reason);
       process.exit(2);
     })
 );
 
-const getFilePath = () => `./concatenate/${getNow()}.csv`;
-
-glob([`${artifacts}/**/*.csv`, `!${getFilePath()}`], async (e, filePathList) => await (e) ? process.exit(1) : concatenateAllCSVs(getFilePath(), filePathList));
+glob([`${artifacts}/**/*.csv`, `!${getFilePath()}`], async (e, filePathList) => await (e) ? process.exit(1) : generateAllCSVs(filePathList));

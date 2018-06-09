@@ -340,9 +340,10 @@ _Pvt_Extensions
 # Log
 log
 
-# Concatenate
-concatenate/*.csv
-concatenate/*.xlsx
+# Report
+report/*.csv
+report/*.xlsx
+report/*.txt
 
 # Archive
 archived-artifacts
