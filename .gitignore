@@ -341,9 +341,9 @@ _Pvt_Extensions
 log
 
 # Report
-report/*.csv
-report/*.xlsx
-report/*.txt
+report/**/*.csv
+report/**/*.xlsx
+report/**/*.txt
 
 # Archive
 archived-artifacts
