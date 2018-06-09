@@ -20,7 +20,12 @@ export default async ({ page, ...config }, {
     await page.click('[data-step-index="1"]');
 
     await page.waitForSelector('[data-step-index="1"] .about-members');
-    await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
+
+    {
+      const selector = page.waitForSelector('[data-step-index="1"] .about-members', { visible: true });
+      await page.evaluate(() => { document.querySelector('[data-step-index="1"] .about-members').scrollIntoView({ behaviour: 'instant' }); });
+      await selector;
+    }
 
     await page.type('[data-step-index="1"] select#business-title', title);
     await page.type('[data-step-index="1"] input#first-name', firstName);

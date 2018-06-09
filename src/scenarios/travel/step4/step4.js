@@ -25,10 +25,19 @@ export default async ({ page, ...config }, { selectOptIn: optIn = false, selectA
     if (toBool(acceptConditions)) await selectAcceptCondition({ ...config, page }, params);
 
     await page.click('[data-step-index="4"] .accept-conditions');
-    await page.evaluate(() => { document.querySelector('[data-step-index="4"] .accept-conditions .buy-btn a').scrollIntoView({ behaviour: 'instant' }); });
 
-    await page.focus('[data-step-index="4"] .accept-conditions .buy-btn a');
-    await page.click('[data-step-index="4"] .accept-conditions .buy-btn a');
+    {
+      const selector = page.waitForSelector('[data-step-index="4"] .accept-conditions .buy-btn a', { visible: true });
+      await page.evaluate(() => { document.querySelector('[data-step-index="4"] .accept-conditions .buy-btn a').scrollIntoView({ behaviour: 'instant' }); });
+      await selector;
+    }
+
+    {
+      const navigation = page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
+      await page.focus('[data-step-index="4"] .accept-conditions .buy-btn a');
+      await page.click('[data-step-index="4"] .accept-conditions .buy-btn a');
+      await navigation;
+    }
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 4. ${message.trim()}`);
 

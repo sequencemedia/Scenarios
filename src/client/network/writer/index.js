@@ -58,6 +58,7 @@ export default () => {
                   'Index',
                   'Method',
                   'URL',
+                  'Payload',
                   'Referer',
                   'Status',
                   'Status Text',
@@ -85,6 +86,7 @@ export default () => {
                     request: {
                       method,
                       url,
+                      postData: payload = '',
                       headers: {
                         Referer: referer = ''
                       }
@@ -104,6 +106,7 @@ export default () => {
                       index,
                       method,
                       url,
+                      payload,
                       referer,
                       status,
                       statusText,

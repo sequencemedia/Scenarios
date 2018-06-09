@@ -110,18 +110,12 @@ export default async ({
 
     await annual(config, params);
 
-    await page.waitForNavigation({ waitUntil: ['networkidle0', 'networkidle2', 'load'] });
-
     await step1(config, params);
     await step2(config, params);
     await step3(config, params);
     await step4(config, params);
 
-    await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
-
     await altapay(config, params);
-
-    await page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
 
     await ensureDir(dir);
 

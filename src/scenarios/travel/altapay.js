@@ -8,8 +8,17 @@ export default async ({ page, ...config }) => {
     await page.type('#creditCardNumberInput', '4444444444444444');
     await page.type('#cvcInput', '123');
 
-    await page.evaluate(() => { document.querySelector('input[type="submit"]').scrollIntoView({ behaviour: 'instant' }); });
-    await page.click('input[type="submit"]');
+    {
+      const selector = page.waitForSelector('input[type="submit"]', { visible: true });
+      await page.evaluate(() => { document.querySelector('input[type="submit"]').scrollIntoView({ behaviour: 'instant' }); });
+      await selector;
+    }
+
+    {
+      const navigation = page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
+      await page.click('input[type="submit"]');
+      await navigation;
+    }
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Altapay. ${message.trim()}`);
 
