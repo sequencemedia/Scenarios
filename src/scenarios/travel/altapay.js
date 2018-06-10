@@ -16,7 +16,12 @@ export default async ({ page, ...config }) => {
     {
       const navigation = page.waitForNavigation({ waitUntil: ['networkidle2', 'load'] });
       await page.click('input[type="submit"]');
-      await navigation;
+      await navigation
+        .catch(({ message = 'No error message is defined' }) => {
+          Logger.error(`Error in Altapay navigation. ${message.trim()}`);
+
+          return captureScreenshot({ ...config, page }, 'altapay-navigation');
+        });
     }
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Altapay. ${message.trim()}`);

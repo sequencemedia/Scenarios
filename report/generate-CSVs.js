@@ -74,10 +74,14 @@ const generateAllCSVs = (filePathList) => (
   readAllCSVs(filePathList)
     .then(createFileData)
     .then((fileData) => writeConcatenatedCSV(getFilePath(), fileData))
-    .catch((reason) => {
-      Logger.error(reason);
+    .catch(({ message = 'No error message defined' }) => {
+      Logger.error(message);
       process.exit(2);
     })
 );
 
-glob([`${artifacts}/**/*.csv`, `!${getFilePath()}`], async (e, filePathList) => await (e) ? process.exit(1) : generateAllCSVs(filePathList));
+export default () => (
+  new Promise((resolve, reject) => {
+    glob([`${artifacts}/**/*.csv`, `!${getFilePath()}`], (e, filePathList) =>(!e) ? generateAllCSVs(filePathList).then(resolve) : reject(e));
+  })
+);

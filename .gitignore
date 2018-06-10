@@ -346,4 +346,4 @@ report/**/*.xlsx
 report/**/*.txt
 
 # Archive
-archived-artifacts
+archive

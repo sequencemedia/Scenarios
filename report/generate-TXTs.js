@@ -79,10 +79,14 @@ const generateAllTXTs = (filePathList) => (
     .then(createJSONDataListFromCSVs)
     .then(createFileDataListFromJSON)
     .then((fileDataList) => writeAllCSVs(fileDataList))
-    .catch((reason) => {
-      Logger.error(reason);
+    .catch(({ message = 'No error message defined' }) => {
+      Logger.error(message);
       process.exit(2);
     })
 );
 
-glob(`${artifacts}/**/*.csv`, async (e, filePathList) => await (e) ? process.exit(1) : generateAllTXTs(filePathList.map((filePath) => ({ filePath }))));
+export default () => (
+  new Promise((resolve, reject) => {
+    glob(`${artifacts}/**/*.csv`, (e, filePathList) => (!e) ? generateAllTXTs(filePathList.map((filePath) => ({ filePath }))).then(resolve) : reject(e));
+  })
+);

@@ -8,8 +8,9 @@
     "lint:fix": "npm run lint -- --fix",
     "build": "rm -r lib ; babel src -d lib",
     "start": "npm run build -- --quiet ; node --require babel-register --require dotenv/config app",
-    "report:csv": "npm run build -- --quiet ; node --require babel-register --require dotenv/config report/generate-CSVs",
-    "report:txt": "npm run build -- --quiet ; node --require babel-register --require dotenv/config report/generate-TXTs"
+    "report": "npm run build -- --quiet ; node --require babel-register --require dotenv/config report/app --csv --txt",
+    "report:csv": "npm run build -- --quiet ; node --require babel-register --require dotenv/config report/app --csv",
+    "report:txt": "npm run build -- --quiet ; node --require babel-register --require dotenv/config report/app --txt"
   },
   "repository": {
     "type": "git",
