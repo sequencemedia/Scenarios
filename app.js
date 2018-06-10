@@ -86,7 +86,7 @@ if (nonStop) {
         Logger.info('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has executed successfully - executing again ...`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        Logger.error('\t', chalk.yellow(format(iteration)), `Scenario ${scenario} has not executed successfully. ${message.trim()} - executing again ...`);
+        Logger.error('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has not executed successfully. ${message.trim()} - executing again ...`);
       })
       .then(() => executeNonStop({ ...c, iteration: iteration + 1 }, p))
   );
@@ -101,7 +101,7 @@ if (nonStop) {
         Logger.info(`Scenario '${scenario}' has executed successfully.`);
       })
       .catch(({ message = 'No error message is defined' }) => {
-        Logger.error(`Scenario ${scenario} has not executed successfully. ${message.trim()}`);
+        Logger.error(`Scenario '${scenario}' has not executed successfully. ${message.trim()}`);
       })
       .then(() => process.exit())
   );

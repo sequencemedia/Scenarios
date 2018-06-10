@@ -1,11 +1,14 @@
 import path from 'path';
 import fs, { ensureFile } from 'fs-extra';
+import moment from 'moment';
 
 import Writer from 'csv-write-stream';
 
 import { map } from 'app/client/network';
 import getDir from 'app/get-dir';
 import getNow from 'app/get-now';
+
+// const toValueOf = (value = '') => Date.parse(value); // Number(new Date(value)); // (new Date(value)).valueOf()
 
 const isEmpty = (object = {}) => { // const isEmpty = (object = {}) => !!Reflect.ownKeys(object).length;
   for (let key in object) return false; // eslint-disable-line
@@ -44,39 +47,39 @@ const getIterations = (values, timestamp, scenario) => (
     ), [])
 );
 
+const getCSV = (iteration, scenario, timestamp) => path.resolve(`${getDir(iteration, scenario, getNow(timestamp))}/network.csv`);
+
 const generateFrom = (values) => (
   Promise.all(getTimestamps(values)
     .map((timestamp) => (
       Promise.all(getScenarios(values, timestamp)
         .map((scenario) => (
           Promise.all(getIterations(values, timestamp, scenario)
-            .map((iteration) => {
-              const f = `${getDir(iteration, scenario, getNow(timestamp))}/network.csv`;
-              const p = path.resolve(f);
+            .map((iteration) => (
+              ensureFile(getCSV(iteration, scenario, timestamp))
+                .then(() => (
+                  new Promise((resolve, reject) => {
+                    const writeStream = fs.createWriteStream(getCSV(iteration, scenario, timestamp));
+                    const writer = Writer({
+                      headers: [
+                        'Index',
+                        'Method',
+                        'URL',
+                        'Payload',
+                        'Referer',
+                        'Status',
+                        'Status Text',
+                        'Succeeded',
+                        'Type',
+                        'Error Text',
+                        'Cancelled',
+                        'Date/Time',
+                        'Timestamp',
+                        'Scenario',
+                        'Iteration'
+                      ]
+                    });
 
-              return ensureFile(p)
-                .then(() => {
-                  const writeStream = fs.createWriteStream(p);
-                  const writer = Writer({
-                    headers: [
-                      'Index',
-                      'Method',
-                      'URL',
-                      'Payload',
-                      'Referer',
-                      'Status',
-                      'Status Text',
-                      'Succeeded',
-                      'Type',
-                      'Error Text',
-                      'Cancelled',
-                      'Timestamp',
-                      'Scenario',
-                      'Iteration'
-                    ]
-                  });
-
-                  return new Promise((resolve, reject) => {
                     writeStream
                       .on('close', resolve)
                       .on('error', reject);
@@ -118,16 +121,17 @@ const generateFrom = (values) => (
                           type,
                           errorText,
                           canceled,
-                          timestamp,
+                          moment(timestamp).format('Do MMMM YYYY, h:mm:ss a'),
+                          Date.parse(timestamp),
                           scenario,
                           iteration
                         ]);
                       });
 
                     writer.end();
-                  });
-                });
-            }))
+                  })
+                ))
+            )))
         )))
     )))
 );
