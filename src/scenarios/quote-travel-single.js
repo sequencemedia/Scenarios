@@ -123,5 +123,7 @@ export default async ({
     await browser.close();
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error calling 'browser.close()' in '${scenario}'. ${message.trim()}`);
+
+    await captureScreenshot(config, scenario);
   }
 };
