@@ -7,6 +7,8 @@ import { map } from 'app/client/network';
 import getDir from 'app/get-dir';
 import getNow from 'app/get-now';
 
+const toValueOf = (string) => (new Date(string)).valueOf();
+
 const isEmpty = (object = {}) => { // const isEmpty = (object = {}) => !!Reflect.ownKeys(object).length;
   for (let key in object) return false; // eslint-disable-line
   return true;
@@ -118,7 +120,7 @@ const generateFrom = (values) => (
                           type,
                           errorText,
                           canceled,
-                          timestamp,
+                          toValueOf(timestamp),
                           scenario,
                           iteration
                         ]);
