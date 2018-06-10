@@ -39,7 +39,7 @@ const step1 = async ({ page, ...config }, params = {}) => {
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 1. ${message.trim()}`);
 
-    await captureScreenshot(config, 'step-1');
+    await captureScreenshot({ ...config, page }, 'step-1');
   }
 };
 

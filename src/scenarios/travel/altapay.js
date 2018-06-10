@@ -20,7 +20,7 @@ export default async ({ page, ...config }) => {
         .catch(({ message = 'No error message is defined' }) => {
           Logger.error(`Error in Altapay navigation. ${message.trim()}`);
 
-          return captureScreenshot({ ...config, page }, 'altapay-navigation');
+          return captureScreenshot({ ...config, page }, 'altapay');
         });
     }
   } catch ({ message = 'No error message is defined' }) {
