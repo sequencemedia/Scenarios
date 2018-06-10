@@ -47,6 +47,7 @@ const env = (
             : DEV
 );
 
+const maximum = Number(args.get('maximum'));
 const nonStop = toBool(args.get('nonStop'));
 const headless = !toBool(args.has('head'));
 const captureNetwork = toBool(args.get('captureNetwork'));
@@ -79,7 +80,22 @@ const params = {
   ...(args.has('brokerCode') ? { applyBrokerCode: args.get('brokerCode') } : {})
 };
 
-if (nonStop) {
+if (maximum) {
+  const executeMaximum = ({ iteration, ...c }, p) => (
+    execute({ ...c, iteration }, p)
+      .then(() => {
+        Logger.info('\t', chalk.yellow(format(iteration)), (iteration < maximum) ? `Scenario '${scenario}' has executed successfully - executing again ...` : `Scenario '${scenario}' has executed successfully.`);
+      })
+      .catch(({ message = 'No error message is defined' }) => {
+        Logger.error('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has not executed successfully. ${message.trim()} - executing again ...`);
+      })
+      .then(() => (iteration < maximum) ? executeMaximum({ ...c, iteration: iteration + 1 }, p) : process.exit())
+  );
+
+  Logger.info((maximum === 1) ? `Executing scenario '${scenario}' for 1 iteration ...` : `Executing scenario '${scenario}' for ${maximum} iterations ...`);
+
+  executeMaximum({ ...config, iteration: 1 }, params);
+} else if (nonStop) {
   const executeNonStop = ({ iteration, ...c }, p) => (
     execute({ ...c, iteration }, p)
       .then(() => {
