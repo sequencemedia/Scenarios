@@ -1,14 +1,21 @@
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import Logger from 'app/logger';
 
 export default async ({ page, ...config }, { brokerCode = '123456789' } = {}) => {
   try {
-    await page.waitForSelector('[data-step-index="3"]', { visible: true });
-    /*
-     *  Weirdness
-     */
-    await page.click('[data-step-index="3"]');
+    {
+      /*
+       *  Weirdness
+       */
+      const selector = page.waitForSelector('[data-step-index="3"]', { visible: true });
+      await page.evaluate(() => { document.querySelector('[data-step-index="3"]').scrollIntoView({ behaviour: 'instant' }); });
+      await selector;
+
+      /*
+       *  Weirdness
+       */
+      await page.click('[data-step-index="3"]');
+    }
 
     {
       const selector = await page.waitForSelector('[data-step-index="3"] .broker-code', { visible: true });
@@ -25,28 +32,14 @@ export default async ({ page, ...config }, { brokerCode = '123456789' } = {}) =>
     /*
      *  Wait for input
      */
-    await page.waitForSelector('[data-step-index="3"] .broker-code input[type="tel"]', { visible: true });
-    await page.type('[data-step-index="3"] .broker-code input[type="tel"]', brokerCode);
-
     {
-      const selector = page.waitForSelector('[data-step-index="3"] .proceed-to-checkout', { visible: true });
-      await page.evaluate(() => { document.querySelector('[data-step-index="3"] .proceed-to-checkout').scrollIntoView({ behaviour: 'instant' }); });
+      const selector = page.waitForSelector('[data-step-index="3"] .broker-code input[type="tel"]', { visible: true });
+      await page.type('[data-step-index="3"] .broker-code input[type="tel"]', brokerCode);
       await selector;
     }
-
-    await page.click('[data-step-index="3"] [data-tracking="cta:click:continue-to-checkout"] button.quote-cta-next');
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 3 - Apply Broker Code. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/step-3-broker-code.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'step-3-broker-code');
   }
 };

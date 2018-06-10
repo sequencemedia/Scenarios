@@ -1,5 +1,4 @@
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import Logger from 'app/logger';
 
 export default async ({ page, ...config }, { contact: { email = 'jonathan.perry@valtech.co.uk' } = {} } = {}) => {
@@ -17,15 +16,6 @@ export default async ({ page, ...config }, { contact: { email = 'jonathan.perry@
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 4 - Enter Email. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/step-4-enter-email.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'step-4-enter-email');
   }
 };

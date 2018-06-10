@@ -1,6 +1,4 @@
-/* eslint no-nested-ternary: "off" */
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import toBool from 'app/to-bool';
 import Logger from 'app/logger';
 
@@ -41,15 +39,6 @@ export default async ({ page, ...config }, { selectOptIn: optIn = false, selectA
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 4. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/step-4.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'step-4');
   }
 };

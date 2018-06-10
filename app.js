@@ -49,22 +49,13 @@ const env = (
 
 const nonStop = toBool(args.get('nonStop'));
 const headless = !toBool(args.has('head'));
-const w = args.get('w');
-const h = args.get('h');
 const captureNetwork = toBool(args.get('captureNetwork'));
-
-const selectPredictedCountry = args.get('selectPredictedCountry');
-const selectBasic = args.get('selectBasic');
-const selectBasicNonMedical = args.get('selectBasicNonMedical');
-const selectBasicNonMedicalTripCancellation = args.get('selectBasicNonMedicalTripCancellation');
-const selectOptIn = args.get('selectOptIn');
-const selectAcceptConditions = args.get('selectAcceptConditions');
 
 const config = {
   env,
   headless,
-  w,
-  h,
+  ...(args.has('w') ? { w: args.get('w') } : {}),
+  ...(args.has('h') ? { h: args.get('h') } : {}),
   scenario,
   timestamp: new Date(),
   captureNetwork
@@ -74,12 +65,18 @@ const params = {
   profile,
   address,
   contact,
-  selectPredictedCountry,
-  selectBasic,
-  selectBasicNonMedical,
-  selectBasicNonMedicalTripCancellation,
-  selectOptIn,
-  selectAcceptConditions
+  ...(args.has('selectPredictedCountry') ? { selectPredictedCountry: args.get('selectPredictedCountry') } : {}),
+  ...(args.has('selectBasic') ? { selectBasic: args.get('selectBasic') } : {}),
+  ...(args.has('selectBasicNonMedical') ? { selectBasicNonMedical: args.get('selectBasicNonMedical') } : {}),
+  ...(args.has('selectBasicNonMedicalTripCancellation') ? { selectBasicNonMedicalTripCancellation: args.get('selectBasicNonMedicalTripCancellation') } : {}),
+  ...(args.has('selectOptIn') ? { selectOptIn: args.get('selectOptIn') } : {}),
+  ...(args.has('selectAcceptConditions') ? { selectAcceptConditions: args.get('selectAcceptConditions') } : {}),
+  ...(args.has('applyCampaignCode') ? { applyCampaignCode: args.get('applyCampaignCode') } : {}),
+  ...(args.has('applyBupaMember') ? { applyBupaMember: args.get('applyBupaMember') } : {}),
+  ...(args.has('applyBrokerCode') ? { applyBrokerCode: args.get('applyBrokerCode') } : {}),
+  ...(args.has('campaignCode') ? { applyCampaignCode: args.get('campaignCode') } : {}),
+  ...(args.has('bupaMember') ? { applyBupaMember: args.get('bupaMember') } : {}),
+  ...(args.has('brokerCode') ? { applyBrokerCode: args.get('brokerCode') } : {})
 };
 
 if (nonStop) {

@@ -1,5 +1,4 @@
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import Logger from 'app/logger';
 
 export default async ({ page, ...config }) => {
@@ -22,15 +21,6 @@ export default async ({ page, ...config }) => {
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Altapay. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/altapay.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'altapay');
   }
 };

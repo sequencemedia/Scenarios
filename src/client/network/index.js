@@ -7,8 +7,8 @@ import transformUrl from 'app/transform-url';
 export const map = new Map();
 
 export default function ({
-  iteration,
-  scenario,
+  iteration = 0,
+  scenario = 'scenario',
   timestamp = new Date(),
   client
 }) {

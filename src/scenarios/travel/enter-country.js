@@ -1,6 +1,4 @@
-/* eslint no-shadow: "off", no-param-reassign: "off" */
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import toBool from 'app/to-bool';
 import Logger from 'app/logger';
 
@@ -25,15 +23,6 @@ export default async ({ page, ...config }, { selectPredictedCountry = false, cou
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Enter Country. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/enter-country.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'enter-country');
   }
 };

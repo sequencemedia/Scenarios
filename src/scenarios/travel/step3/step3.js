@@ -1,14 +1,59 @@
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
+import toBool from 'app/to-bool';
 import Logger from 'app/logger';
 
-export default async ({ page, ...config }) => {
+import applyCampaignCode from './step3-apply-campaign-code';
+import applyBupaMember from './step3-apply-bupa-member';
+import applyBrokerCode from './step3-apply-broker-code';
+
+export default async ({
+  page,
+  ...config
+}, {
+    applyCampaignCode: campaignCode = false,
+    applyBupaMember: bupaMember = false,
+    applyBrokerCode: brokerCode = false,
+    ...params
+  }) => {
   try {
-    await page.waitForSelector('[data-step-index="3"]', { visible: true });
-    /*
-     *  Weirdness
-     */
-    await page.click('[data-step-index="3"]');
+    if (toBool(campaignCode)) {
+      await applyCampaignCode({ ...config, page }, {
+        ...params,
+        applyCampaignCode: campaignCode,
+        applyBupaMember: bupaMember,
+        applyBrokerCode: brokerCode
+      });
+    }
+    if (toBool(bupaMember)) {
+      await applyBupaMember({ ...config, page }, {
+        ...params,
+        applyCampaignCode: campaignCode,
+        applyBupaMember: bupaMember,
+        applyBrokerCode: brokerCode
+      });
+    }
+    if (toBool(brokerCode)) {
+      await applyBrokerCode({ ...config, page }, {
+        ...params,
+        applyCampaignCode: campaignCode,
+        applyBupaMember: bupaMember,
+        applyBrokerCode: brokerCode
+      });
+    }
+
+    {
+      /*
+       *  Weirdness
+       */
+      const selector = page.waitForSelector('[data-step-index="3"]', { visible: true });
+      await page.evaluate(() => { document.querySelector('[data-step-index="3"]').scrollIntoView({ behaviour: 'instant' }); });
+      await selector;
+
+      /*
+       *  Weirdness
+       */
+      await page.click('[data-step-index="3"]');
+    }
 
     {
       const selector = page.waitForSelector('[data-step-index="3"] .proceed-to-checkout', { visible: true });
@@ -20,15 +65,6 @@ export default async ({ page, ...config }) => {
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 3. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/step-3.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'step-3');
   }
 };

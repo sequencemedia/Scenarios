@@ -1,7 +1,6 @@
 import puppeteer from 'puppeteer';
 
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import getNow from 'app/get-now';
 import getDir from 'app/get-dir';
 import Logger from 'app/logger';
@@ -40,16 +39,7 @@ const step1 = async ({ page, ...config }, params = {}) => {
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Step 1. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/step-1.png`,
-      fullPage: true
-    });
+    await captureScreenshot(config, 'step-1');
   }
 };
 
@@ -117,21 +107,11 @@ export default async ({
 
     await altapay(config, params);
 
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/step-4-confirmation.png`,
-      fullPage: true
-    });
+    await captureScreenshot(config, 'step-4-confirmation');
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in scenario '${scenario}'. ${message.trim()}`);
 
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/${scenario}.png`,
-      fullPage: true
-    });
+    await captureScreenshot(config, scenario);
   } finally {
     if (captureNetwork) {
       await networkEvents.detach();

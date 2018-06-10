@@ -28,7 +28,7 @@ const reduceRows = (accumulator = [], rows = [], index = 0) => (
   (rows.length)
     ? accumulator
       .concat({
-        filePath: `./concatenate/${getNow()}/${index + 1}.txt`,
+        filePath: `./report/${getNow()}/${index + 1}.txt`,
         fileData: rows.map((row) => {
           const {
             Method: method,

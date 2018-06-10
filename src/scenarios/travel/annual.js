@@ -1,5 +1,4 @@
-import { ensureDir } from 'fs-extra';
-
+import captureScreenshot from 'app/capture-screenshot';
 import Logger from 'app/logger';
 
 import selectAnnual from './select-annual';
@@ -31,15 +30,6 @@ export default async ({ page, ...config }, params = {}) => {
   } catch ({ message = 'No error message is defined' }) {
     Logger.error(`Error in Annual. ${message.trim()}`);
 
-    const {
-      dir
-    } = config;
-
-    await ensureDir(dir);
-
-    await page.screenshot({
-      path: `${dir}/annual.png`,
-      fullPage: true
-    });
+    await captureScreenshot({ ...config, page }, 'annual');
   }
 };
