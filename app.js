@@ -1,7 +1,5 @@
 /* eslint no-nested-ternary: "off" */
 
-import chalk from 'chalk';
-
 import {
   PRODUCTION,
   STAGING,
@@ -18,8 +16,12 @@ import profile from 'app/profile';
 import address from 'app/address';
 import contact from 'app/contact';
 import toBool from 'app/to-bool';
-import format from 'app/format';
 import Logger from 'app/logger';
+import {
+  executeMaximum,
+  executeNonStop,
+  executeMinimum
+} from 'app/execute';
 
 process.once('exit', onExit);
 
@@ -28,10 +30,6 @@ const scenario = args.get('scenario');
 if (!scenario) process.exit(2);
 
 if (!Reflect.has(scenarios, scenario)) process.exit(3);
-
-const {
-  [scenario]: execute = () => Promise.resolve()
-} = scenarios;
 
 const env = (
   args.has('url')
@@ -81,49 +79,16 @@ const params = {
 };
 
 if (maximum) {
-  const executeMaximum = ({ iteration, ...c }, p) => (
-    execute({ ...c, iteration }, p)
-      .then(() => {
-        Logger.info('\t', chalk.yellow(format(iteration)), (iteration < maximum) ? `Scenario '${scenario}' has executed successfully - executing again ...` : `Scenario '${scenario}' has executed successfully.`);
-      })
-      .catch(({ message = 'No error message is defined' }) => {
-        Logger.error('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has not executed successfully. ${message.trim()} - executing again ...`);
-      })
-      .then(() => (iteration < maximum) ? executeMaximum({ ...c, iteration: iteration + 1 }, p) : process.exit())
-  );
-
   Logger.info((maximum === 1) ? `Executing scenario '${scenario}' for 1 iteration ...` : `Executing scenario '${scenario}' for ${maximum} iterations ...`);
 
-  executeMaximum({ ...config, iteration: 1 }, params);
+  executeMaximum({ ...config, maximum }, params);
 } else if (nonStop) {
-  const executeNonStop = ({ iteration, ...c }, p) => (
-    execute({ ...c, iteration }, p)
-      .then(() => {
-        Logger.info('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has executed successfully - executing again ...`);
-      })
-      .catch(({ message = 'No error message is defined' }) => {
-        Logger.error('\t', chalk.yellow(format(iteration)), `Scenario '${scenario}' has not executed successfully. ${message.trim()} - executing again ...`);
-      })
-      .then(() => executeNonStop({ ...c, iteration: iteration + 1 }, p))
-  );
-
   Logger.info(`Executing scenario '${scenario}' non-stop ...`);
 
-  executeNonStop({ ...config, iteration: 1 }, params);
+  executeNonStop(config, params);
 } else {
-  const executeOnce = (c, p) => (
-    execute(c, p)
-      .then(() => {
-        Logger.info(`Scenario '${scenario}' has executed successfully.`);
-      })
-      .catch(({ message = 'No error message is defined' }) => {
-        Logger.error(`Scenario '${scenario}' has not executed successfully. ${message.trim()}`);
-      })
-      .then(() => process.exit())
-  );
-
   Logger.info(`Executing scenario '${scenario}' ...`);
 
-  executeOnce(config, params);
+  executeMinimum(config, params);
 }
 
